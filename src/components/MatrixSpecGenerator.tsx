@@ -46,45 +46,45 @@ const DEFAULT_MATRIX_7991: MatrixRow7991[] = [
     id: 1,
     topic: '1. Căn bậc hai và căn bậc ba',
     subtopic: 'Căn thức bậc hai, hằng đẳng thức căn, trục căn thức ở mẫu, biến đổi rút gọn biểu thức',
-    mc_biet: 3, mc_hieu: 1, mc_vandung: 0,
+    mc_biet: 2, mc_hieu: 1, mc_vandung: 0,
     tf_biet: 1, tf_hieu: 0, tf_vandung: 0,
     sa_biet: 1, sa_hieu: 0, sa_vandung: 0,
-    tl_biet: 0, tl_hieu: 1, tl_vandung: 0,
+    tl_biet: 0, tl_hieu: 0, tl_vandung: 0,
   },
   {
     id: 2,
     topic: '2. Phương trình & Hệ 2 phương trình bậc nhất 2 ẩn',
     subtopic: 'Khái niệm, giải hệ phương trình bằng PP thế và PP cộng đại số, giải bài toán bằng cách lập hệ phương trình',
-    mc_biet: 2, mc_hieu: 1, mc_vandung: 0,
+    mc_biet: 2, mc_hieu: 0, mc_vandung: 0,
     tf_biet: 0, tf_hieu: 1, tf_vandung: 0,
-    sa_biet: 0, sa_hieu: 1, sa_vandung: 0,
-    tl_biet: 0, tl_hieu: 0, tl_vandung: 1,
+    sa_biet: 0, sa_hieu: 0, sa_vandung: 0,
+    tl_biet: 0, tl_hieu: 1, tl_vandung: 0,
   },
   {
     id: 3,
     topic: '3. Phương trình bậc hai một ẩn & Định lí Viète',
     subtopic: 'Công thức nghiệm, định lí Viète và ứng dụng nhẩm nghiệm, hệ thức đối xứng và bài toán tham số m',
-    mc_biet: 2, mc_hieu: 1, mc_vandung: 0,
+    mc_biet: 1, mc_hieu: 1, mc_vandung: 0,
     tf_biet: 0, tf_hieu: 0, tf_vandung: 0,
-    sa_biet: 0, sa_hieu: 1, sa_vandung: 0,
+    sa_biet: 0, sa_hieu: 0, sa_vandung: 1,
     tl_biet: 0, tl_hieu: 0, tl_vandung: 0,
   },
   {
     id: 4,
     topic: '4. Hệ thức lượng & Đường tròn',
     subtopic: 'Tỉ số lượng giác góc nhọn, vị trí tương đối của đường thẳng và đường tròn, tiếp tuyến, góc nội tiếp, tứ giác nội tiếp',
-    mc_biet: 3, mc_hieu: 1, mc_vandung: 0,
+    mc_biet: 2, mc_hieu: 1, mc_vandung: 0,
     tf_biet: 0, tf_hieu: 0, tf_vandung: 0,
-    sa_biet: 0, sa_hieu: 0, sa_vandung: 1,
+    sa_biet: 1, sa_hieu: 0, sa_vandung: 0,
     tl_biet: 0, tl_hieu: 0, tl_vandung: 1,
   },
   {
     id: 5,
     topic: '5. Hình khối thực tiễn, Bất đẳng thức & Cực trị',
     subtopic: 'Hình trụ, hình nón, hình cầu trong đời sống; Bất đẳng thức Cauchy và tìm GTLN, GTNN',
-    mc_biet: 1, mc_hieu: 0, mc_vandung: 0,
+    mc_biet: 1, mc_hieu: 1, mc_vandung: 0,
     tf_biet: 0, tf_hieu: 0, tf_vandung: 0,
-    sa_biet: 0, sa_hieu: 0, sa_vandung: 0,
+    sa_biet: 0, sa_hieu: 0, sa_vandung: 1,
     tl_biet: 0, tl_hieu: 0, tl_vandung: 1,
   },
 ];
@@ -110,13 +110,13 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     topic: 'Căn bậc hai và căn bậc ba',
     subtopic: 'Căn thức bậc hai, tính chất và rút gọn biểu thức chứa căn',
     competencies: 'NL1 (Tư duy & lập luận), NL4 (Giao tiếp toán học)',
-    reqBiet: 'Nhận biết điều kiện xác định của biểu thức $\\sqrt{A}$. Nhận biết hằng đẳng thức $\\sqrt{A^2} = |A|$. Tính giá trị căn bậc hai số học của một số dương.',
+    reqBiet: 'Nhận biết điều kiện xác định của biểu thức √(A). Nhận biết hằng đẳng thức √(A²) = |A|. Tính giá trị căn bậc hai số học của một số dương.',
     reqHieu: 'Thực hiện được các phép biến đổi đơn giản: đưa thừa số ra ngoài/vào trong dấu căn, trục căn thức ở mẫu. Rút gọn biểu thức chứa căn bậc hai số học.',
     reqVanDung: 'Vận dụng rút gọn biểu thức đại số chứa căn phức hợp, tìm giá trị của biến để biểu thức nguyên hoặc đạt giá trị thỏa mãn điều kiện cho trước.',
-    mcBiet: 3, mcHieu: 1, mcVanDung: 0,
+    mcBiet: 2, mcHieu: 1, mcVanDung: 0,
     tfBiet: 1, tfHieu: 0, tfVanDung: 0,
     saBiet: 1, saHieu: 0, saVanDung: 0,
-    tlBiet: 0, tlHieu: 1, tlVanDung: 0,
+    tlBiet: 0, tlHieu: 0, tlVanDung: 0,
   },
   {
     id: 2,
@@ -126,22 +126,22 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     reqBiet: 'Nhận biết nghiệm của phương trình bậc nhất hai ẩn và hệ hai phương trình bậc nhất hai ẩn dạng tổng quát.',
     reqHieu: 'Giải được hệ hai phương trình bậc nhất hai ẩn bằng phương pháp thế hoặc phương pháp cộng đại số.',
     reqVanDung: 'Giải quyết được một số vấn đề thực tiễn gắn với hệ phương trình (bài toán chuyển động, bài toán năng suất, kinh tế, tỉ số phần trăm).',
-    mcBiet: 2, mcHieu: 1, mcVanDung: 0,
+    mcBiet: 2, mcHieu: 0, mcVanDung: 0,
     tfBiet: 0, tfHieu: 1, tfVanDung: 0,
-    saBiet: 0, saHieu: 1, saVanDung: 0,
-    tlBiet: 0, tlHieu: 0, tlVanDung: 1,
+    saBiet: 0, saHieu: 0, saVanDung: 0,
+    tlBiet: 0, tlHieu: 1, tlVanDung: 0,
   },
   {
     id: 3,
     topic: 'Phương trình bậc hai một ẩn và định lí Viète',
     subtopic: 'Công thức nghiệm, định lí Viète và hệ thức nghiệm',
     competencies: 'NL1 (Tư duy toán học), NL3 (Giải quyết vấn đề)',
-    reqBiet: 'Nhận biết dạng tổng quát $ax^2 + bx + c = 0$ ($a \\neq 0$). Nhận biết biệt thức $\\Delta = b^2 - 4ac$ và điều kiện có nghiệm.',
-    reqHieu: 'Vận dụng công thức nghiệm hoặc định lí Viète để tính tổng $S = -b/a$ và tích $P = c/a$ của hai nghiệm mà không cần giải phương trình.',
+    reqBiet: 'Nhận biết dạng tổng quát ax² + bx + c = 0 (a ≠ 0). Nhận biết biệt thức Δ = b² - 4ac và điều kiện có nghiệm.',
+    reqHieu: 'Vận dụng công thức nghiệm hoặc định lí Viète để tính tổng S = -b/a và tích P = c/a của hai nghiệm mà không cần giải phương trình.',
     reqVanDung: 'Tìm giá trị của tham số m để phương trình có hai nghiệm thỏa mãn biểu thức đối xứng hoặc điều kiện về dấu của nghiệm.',
-    mcBiet: 2, mcHieu: 1, mcVanDung: 0,
+    mcBiet: 1, mcHieu: 1, mcVanDung: 0,
     tfBiet: 0, tfHieu: 0, tfVanDung: 0,
-    saBiet: 0, saHieu: 1, saVanDung: 0,
+    saBiet: 0, saHieu: 0, saVanDung: 1,
     tlBiet: 0, tlHieu: 0, tlVanDung: 0,
   },
   {
@@ -150,11 +150,11 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     subtopic: 'Tỉ số lượng giác, tiếp tuyến, góc nội tiếp và tứ giác nội tiếp',
     competencies: 'NL1 (Lập luận hình học), NL5 (Sử dụng công cụ vẽ hình)',
     reqBiet: 'Nhận biết định nghĩa tỉ số lượng giác sin, cos, tan, cot. Nhận biết tính chất của tiếp tuyến và góc nội tiếp chắn nửa đường tròn.',
-    reqHieu: 'Tính được độ dài đoạn thẳng, tỉ số lượng giác trong tam giác vuông. Chứng minh được tứ giác nội tiếp bằng dấu hiệu tổng hai góc đối diện bằng $180^\\circ$.',
+    reqHieu: 'Tính được độ dài đoạn thẳng, tỉ số lượng giác trong tam giác vuông. Chứng minh được tứ giác nội tiếp bằng dấu hiệu tổng hai góc đối diện bằng 180°.',
     reqVanDung: 'Vận dụng tính chất tiếp tuyến, đường kính và dây cung để giải quyết bài toán đồng quy, thẳng hàng và tỉ số diện tích.',
-    mcBiet: 3, mcHieu: 1, mcVanDung: 0,
+    mcBiet: 2, mcHieu: 1, mcVanDung: 0,
     tfBiet: 0, tfHieu: 0, tfVanDung: 0,
-    saBiet: 0, saHieu: 0, saVanDung: 1,
+    saBiet: 1, saHieu: 0, saVanDung: 0,
     tlBiet: 0, tlHieu: 0, tlVanDung: 1,
   },
   {
@@ -165,9 +165,9 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     reqBiet: 'Nhận biết công thức tính diện tích xung quanh, thể tích hình trụ, hình nón, hình cầu.',
     reqHieu: 'Tính toán diện tích, thể tích các vật thể hình học trong đời sống thực tế.',
     reqVanDung: 'Vận dụng bất đẳng thức Cauchy hoặc phương pháp biến đổi đại số để tìm giá trị lớn nhất, giá trị nhỏ nhất của biểu thức.',
-    mcBiet: 1, mcHieu: 0, mcVanDung: 0,
+    mcBiet: 1, mcHieu: 1, mcVanDung: 0,
     tfBiet: 0, tfHieu: 0, tfVanDung: 0,
-    saBiet: 0, saHieu: 0, saVanDung: 0,
+    saBiet: 0, saHieu: 0, saVanDung: 1,
     tlBiet: 0, tlHieu: 0, tlVanDung: 1,
   },
 ];
@@ -177,7 +177,9 @@ export const MatrixSpecGenerator: React.FC = () => {
   const [examName, setExamName] = useState('ĐỀ KIỂM TRA ĐỊNH KỲ HỌC KÌ MÔN TOÁN LỚP 9');
   const [duration, setDuration] = useState(90);
   const [examCode, setExamCode] = useState('101');
-  const [schoolName, setSchoolName] = useState('TRƯỜNG THCS NGUYỄN HUỆ');
+  const [schoolName, setSchoolName] = useState('TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH');
+  const [deptName, setDeptName] = useState('TỔ TỰ NHIÊN');
+  const [schoolYear, setSchoolYear] = useState('2026 - 2027');
 
   // Matrix calculations
   const totalMC_Biet = DEFAULT_MATRIX_7991.reduce((sum, r) => sum + r.mc_biet, 0);
@@ -231,15 +233,15 @@ export const MatrixSpecGenerator: React.FC = () => {
       <body>
         <table style="border: none; width: 100%; margin-bottom: 20px;">
           <tr style="border: none;">
-            <td style="border: none; width: 45%; text-align: center; vertical-align: top;">
-              <strong>${schoolName.toUpperCase()}</strong><br/>
-              <strong>TỔ TOÁN - TIN HỌC</strong><br/>
-              <em>Teacher: Lê Thanh Tùng</em>
+            <td style="border: none; width: 50%; text-align: center; vertical-align: top;">
+              <strong>TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH</strong><br/>
+              <strong>TỔ TỰ NHIÊN</strong><br/>
+              <em>Tác giả & Giáo viên: Teacher Lê Thanh Tùng</em>
             </td>
-            <td style="border: none; width: 55%; text-align: center; vertical-align: top;">
+            <td style="border: none; width: 50%; text-align: center; vertical-align: top;">
               <strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br/>
               <strong>Độc lập - Tự do - Hạnh phúc</strong><br/>
-              ------------------
+              <em>Năm học: 2026 - 2027</em>
             </td>
           </tr>
         </table>
@@ -250,23 +252,25 @@ export const MatrixSpecGenerator: React.FC = () => {
         <p style="text-align: center;"><strong>Thời gian làm bài: ${duration} phút</strong> (Không kể thời gian phát đề) - <strong>Mã đề: ${examCode}</strong></p>
         <hr style="border: 0.5px solid #000; margin: 15px 0;"/>
 
-        <h3>PHẦN 1: MA TRẬN ĐỀ KIỂM TRA ĐỊNH KÌ (PHỤ LỤC 1 - CV 7991)</h3>
+        <h3>PHẦN 1: MA TRẬN ĐỀ KIỂM TRA ĐỊNH KÌ (PHỤ LỤC 1 - THEO CÔNG VĂN 7991/BGDĐT-GDTrH)</h3>
         <table>
           <thead>
             <tr style="background-color: #f2f2f2;">
               <th rowspan="3">TT</th>
               <th rowspan="3">Chủ đề / Chương</th>
               <th rowspan="3">Nội dung / đơn vị kiến thức</th>
-              <th colspan="9">Mức độ đánh giá</th>
+              <th colspan="12">Mức độ đánh giá</th>
               <th rowspan="2" colspan="3">Tổng</th>
               <th rowspan="3">Tỉ lệ % điểm</th>
             </tr>
             <tr style="background-color: #f2f2f2;">
-              <th colspan="3">Nhiều lựa chọn (3,0đ)</th>
-              <th colspan="3">Đúng - Sai (2,0đ)</th>
-              <th colspan="3">Trả lời ngắn (2,0đ)</th>
+              <th colspan="3">Nhiều lựa chọn (3,0đ) [5]</th>
+              <th colspan="3">Đúng - Sai (2,0đ) [2]</th>
+              <th colspan="3">Trả lời ngắn (2,0đ) [3]</th>
+              <th colspan="3">Tự luận (3,0đ)</th>
             </tr>
             <tr style="background-color: #f2f2f2;">
+              <th>Biết</th><th>Hiểu</th><th>VD</th>
               <th>Biết</th><th>Hiểu</th><th>VD</th>
               <th>Biết</th><th>Hiểu</th><th>VD</th>
               <th>Biết</th><th>Hiểu</th><th>VD</th>
@@ -280,20 +284,22 @@ export const MatrixSpecGenerator: React.FC = () => {
                 <td class="left bold">${r.topic}</td>
                 <td class="left">${r.subtopic}</td>
                 <td>${r.mc_biet || '-'}</td><td>${r.mc_hieu || '-'}</td><td>${r.mc_vandung || '-'}</td>
-                <td>${r.tf_biet ? '(1c) a,b,c,d' : '-'}</td><td>${r.tf_hieu ? '(1c) a,b,c,d' : '-'}</td><td>${r.tf_vandung || '-'}</td>
+                <td>${r.tf_biet ? '(1c) 4 ý' : '-'}</td><td>${r.tf_hieu ? '(1c) 4 ý' : '-'}</td><td>${r.tf_vandung || '-'}</td>
                 <td>${r.sa_biet || '-'}</td><td>${r.sa_hieu || '-'}</td><td>${r.sa_vandung || '-'}</td>
-                <td>${r.mc_biet + r.tf_biet + r.sa_biet}</td>
-                <td>${r.mc_hieu + r.tf_hieu + r.sa_hieu}</td>
-                <td>${r.mc_vandung + r.tf_vandung + r.sa_vandung}</td>
+                <td>${r.tl_biet || '-'}</td><td>${r.tl_hieu ? '1 bài (1,0đ)' : '-'}</td><td>${r.tl_vandung ? (r.id === 4 ? '1 bài (1,5đ)' : '1 bài (0,5đ)') : '-'}</td>
+                <td class="bold">${r.mc_biet + r.tf_biet + r.sa_biet + r.tl_biet}</td>
+                <td class="bold">${r.mc_hieu + r.tf_hieu + r.sa_hieu + r.tl_hieu}</td>
+                <td class="bold">${r.mc_vandung + r.tf_vandung + r.sa_vandung + r.tl_vandung}</td>
                 <td>20%</td>
               </tr>
             `).join('')}
             <tr class="bold" style="background-color: #e6f2ff;">
               <td colspan="3">Tổng số câu</td>
               <td colspan="3">12 câu</td>
-              <td colspan="3">2 câu (8 ý)</td>
+              <td colspan="3">2 câu (8 ý a,b,c,d)</td>
               <td colspan="3">4 câu</td>
               <td colspan="3">3 bài tự luận</td>
+              <td>11</td><td>6</td><td>4</td>
               <td>100%</td>
             </tr>
             <tr class="bold" style="background-color: #e6f2ff;">
@@ -301,6 +307,7 @@ export const MatrixSpecGenerator: React.FC = () => {
               <td colspan="3">3,0 điểm</td>
               <td colspan="3">2,0 điểm</td>
               <td colspan="3">2,0 điểm</td>
+              <td colspan="3">3,0 điểm</td>
               <td>4,0đ</td><td>3,0đ</td><td>3,0đ</td>
               <td>10,0 điểm</td>
             </tr>
@@ -309,12 +316,13 @@ export const MatrixSpecGenerator: React.FC = () => {
               <td colspan="3">30%</td>
               <td colspan="3">20%</td>
               <td colspan="3">20%</td>
+              <td colspan="3">30%</td>
               <td>40%</td><td>30%</td><td>30%</td>
               <td>100%</td>
             </tr>
           </tbody>
         </table>
-        <p class="footnote"><em>Ghi chú theo CV 7991: [2] Mỗi câu hỏi Đúng - Sai gồm 4 ý nhỏ a, b, c, d; [3] Câu hỏi ngắn điền đáp số; [5] Tỉ lệ điểm TNKQ 70% (7,0 điểm) và Tự luận 30% (3,0 điểm).</em></p>
+        <p class="footnote"><em>Ghi chú theo CV 7991: [2] Mỗi câu hỏi Đúng - Sai gồm 4 ý nhỏ a, b, c, d (Barem: đúng 1 ý = 0,1đ; đúng 2 ý = 0,25đ; đúng 3 ý = 0,5đ; đúng 4 ý = 1,0đ); [3] Câu hỏi ngắn điền đáp số; [5] Tỉ lệ điểm TNKQ 70% (7,0 điểm) và Tự luận 30% (3,0 điểm). Mức độ: Biết 40% (4,0đ) - Hiểu 30% (3,0đ) - Vận dụng 30% (3,0đ).</em></p>
 
         <div style="page-break-before: always;"></div>
         <h3>PHẦN 2: ĐỀ KIỂM TRA ĐỊNH KÌ (THEO CHUẨN CÔNG VĂN 7991)</h3>
@@ -448,12 +456,68 @@ export const MatrixSpecGenerator: React.FC = () => {
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-blue-200">
+            <span>Đơn vị: <strong>TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH</strong> (Tổ Tự nhiên)</span>
+            <span>•</span>
             <span>Tác giả & Bản quyền: <strong>Teacher Lê Thanh Tùng</strong></span>
             <span>•</span>
             <span>Định dạng điểm: <strong>70% TNKQ / 30% Tự luận</strong></span>
             <span>•</span>
             <span>Tỉ lệ mức độ: <strong>40% Biết / 30% Hiểu / 30% Vận dụng</strong></span>
           </div>
+        </div>
+      </div>
+
+      {/* School Unit & Period Configuration Bar */}
+      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3 no-print">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-purple-600" />
+            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+              ĐƠN VỊ: <span className="text-purple-600 dark:text-purple-400">{schoolName}</span> – {deptName}
+            </span>
+            <span className="text-xs text-slate-400 font-medium">({schoolYear})</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-500 font-medium">Mã đề:</span>
+            <input
+              type="text"
+              value={examCode}
+              onChange={(e) => setExamCode(e.target.value)}
+              className="w-16 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono font-bold text-center"
+            />
+            <span className="text-slate-500 font-medium ml-2">Thời gian:</span>
+            <input
+              type="number"
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="w-16 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold text-center"
+            />
+            <span className="text-slate-500">phút</span>
+          </div>
+        </div>
+
+        {/* Quick Period Buttons according to Plan of Trường TH, THCS Nguyễn Hữu Cảnh */}
+        <div className="flex items-center gap-2 overflow-x-auto text-xs">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0">Kỳ kiểm tra:</span>
+          {[
+            { id: 'GK1', name: 'Giữa Học kỳ 1 (Tuần 9)', title: 'ĐỀ KIỂM TRA ĐỊNH KỲ GIỮA HỌC KỲ I MÔN TOÁN 9' },
+            { id: 'CK1', name: 'Cuối Học kỳ 1 (Tuần 18)', title: 'ĐỀ KIỂM TRA ĐỊNH KỲ CUỐI HỌC KỲ I MÔN TOÁN 9' },
+            { id: 'GK2', name: 'Giữa Học kỳ 2 (Tuần 26)', title: 'ĐỀ KIỂM TRA ĐỊNH KỲ GIỮA HỌC KỲ II MÔN TOÁN 9' },
+            { id: 'CK2', name: 'Cuối Học kỳ 2 (Tuần 35)', title: 'ĐỀ KIỂM TRA ĐỊNH KỲ CUỐI HỌC KỲ II MÔN TOÁN 9' },
+          ].map((period) => (
+            <button
+              key={period.id}
+              onClick={() => setExamName(period.title)}
+              className={`px-3 py-1.5 rounded-xl font-semibold transition cursor-pointer shrink-0 ${
+                examName === period.title
+                  ? 'bg-purple-600 text-white shadow-xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              {period.name}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -530,11 +594,14 @@ export const MatrixSpecGenerator: React.FC = () => {
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 gap-3">
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
+                TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH • TỔ TỰ NHIÊN • NĂM HỌC 2026 - 2027
+              </div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 mt-0.5">
                 <FileSpreadsheet className="w-5 h-5 text-purple-600" />
                 1. KHUNG MA TRẬN ĐỀ KIỂM TRA ĐỊNH KÌ THEO CÔNG VĂN 7991/BGDĐT-GDTrH
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Phụ lục 1 kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ Giáo dục và Đào tạo
               </p>
             </div>
@@ -553,7 +620,7 @@ export const MatrixSpecGenerator: React.FC = () => {
                   <th className="p-2.5 border-r border-slate-300 dark:border-slate-700" rowSpan={3}>TT</th>
                   <th className="p-2.5 border-r border-slate-300 dark:border-slate-700 text-left min-w-[180px]" rowSpan={3}>Chủ đề / Chương</th>
                   <th className="p-2.5 border-r border-slate-300 dark:border-slate-700 text-left min-w-[220px]" rowSpan={3}>Nội dung / đơn vị kiến thức</th>
-                  <th className="p-2 border-b border-r border-slate-300 dark:border-slate-700" colSpan={9}>Mức độ đánh giá</th>
+                  <th className="p-2 border-b border-r border-slate-300 dark:border-slate-700" colSpan={12}>Mức độ đánh giá</th>
                   <th className="p-2 border-b border-r border-slate-300 dark:border-slate-700" rowSpan={2} colSpan={3}>Tổng</th>
                   <th className="p-2.5" rowSpan={3}>Tỉ lệ % điểm</th>
                 </tr>
@@ -561,8 +628,12 @@ export const MatrixSpecGenerator: React.FC = () => {
                   <th className="p-1.5 border-r border-slate-300 dark:border-slate-700" colSpan={3}>TNKQ Nhiều lựa chọn (3,0đ) [5]</th>
                   <th className="p-1.5 border-r border-slate-300 dark:border-slate-700" colSpan={3}>TNKQ "Đúng - Sai" (2,0đ) [2]</th>
                   <th className="p-1.5 border-r border-slate-300 dark:border-slate-700" colSpan={3}>TNKQ Trả lời ngắn (2,0đ) [3]</th>
+                  <th className="p-1.5 border-r border-slate-300 dark:border-slate-700" colSpan={3}>Tự luận (3,0đ)</th>
                 </tr>
                 <tr className="bg-slate-100/60 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-300 dark:border-slate-700">
+                  <th className="p-1 border-r border-slate-300 dark:border-slate-700">Biết</th>
+                  <th className="p-1 border-r border-slate-300 dark:border-slate-700">Hiểu</th>
+                  <th className="p-1 border-r border-slate-300 dark:border-slate-700">VD</th>
                   <th className="p-1 border-r border-slate-300 dark:border-slate-700">Biết</th>
                   <th className="p-1 border-r border-slate-300 dark:border-slate-700">Hiểu</th>
                   <th className="p-1 border-r border-slate-300 dark:border-slate-700">VD</th>
@@ -593,13 +664,17 @@ export const MatrixSpecGenerator: React.FC = () => {
                       <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.mc_hieu || '-'}</td>
                       <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.mc_vandung || '-'}</td>
 
-                      <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tf_biet ? '(1c) a,b,c,d' : '-'}</td>
-                      <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tf_hieu ? '(1c) a,b,c,d' : '-'}</td>
+                      <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tf_biet ? '(1c) 4 ý' : '-'}</td>
+                      <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tf_hieu ? '(1c) 4 ý' : '-'}</td>
                       <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tf_vandung || '-'}</td>
 
                       <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.sa_biet || '-'}</td>
                       <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.sa_hieu || '-'}</td>
                       <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.sa_vandung || '-'}</td>
+
+                      <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tl_biet || '-'}</td>
+                      <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tl_hieu ? '1 bài (1,0đ)' : '-'}</td>
+                      <td className="p-1.5 border-r border-slate-200 dark:border-slate-800">{row.tl_vandung ? (row.id === 4 ? '1 bài (1,5đ)' : '1 bài (0,5đ)') : '-'}</td>
 
                       <td className="p-1.5 font-bold border-r border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30">{sumBiet}</td>
                       <td className="p-1.5 font-bold border-r border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/30">{sumHieu}</td>
@@ -616,9 +691,10 @@ export const MatrixSpecGenerator: React.FC = () => {
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-blue-600">12 câu (Nhiều lựa chọn)</td>
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-emerald-600">2 câu (8 ý a,b,c,d)</td>
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-indigo-600">4 câu (Trả lời ngắn)</td>
-                  <td className="p-2 border-r border-slate-300 dark:border-slate-700">Biết</td>
-                  <td className="p-2 border-r border-slate-300 dark:border-slate-700">Hiểu</td>
-                  <td className="p-2 border-r border-slate-300 dark:border-slate-700">VD</td>
+                  <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-purple-600">3 bài tự luận</td>
+                  <td className="p-2 border-r border-slate-300 dark:border-slate-700">11</td>
+                  <td className="p-2 border-r border-slate-300 dark:border-slate-700">6</td>
+                  <td className="p-2 border-r border-slate-300 dark:border-slate-700">4</td>
                   <td className="p-2">100%</td>
                 </tr>
 
@@ -628,9 +704,10 @@ export const MatrixSpecGenerator: React.FC = () => {
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-blue-700 dark:text-blue-300">3,0 điểm [5]</td>
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-emerald-700 dark:text-emerald-300">2,0 điểm</td>
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-indigo-700 dark:text-indigo-300">2,0 điểm</td>
-                  <td className="p-2 border-r border-slate-300 dark:border-slate-700 text-amber-700 dark:text-amber-300">4,0</td>
-                  <td className="p-2 border-r border-slate-300 dark:border-slate-700 text-amber-700 dark:text-amber-300">3,0</td>
-                  <td className="p-2 border-r border-slate-300 dark:border-slate-700 text-amber-700 dark:text-amber-300">3,0</td>
+                  <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700 text-purple-700 dark:text-purple-300">3,0 điểm</td>
+                  <td className="p-2 border-r border-slate-300 dark:border-slate-700 text-amber-700 dark:text-amber-300">4,0đ</td>
+                  <td className="p-2 border-r border-slate-300 dark:border-slate-700 text-amber-700 dark:text-amber-300">3,0đ</td>
+                  <td className="p-2 border-r border-slate-300 dark:border-slate-700 text-amber-700 dark:text-amber-300">3,0đ</td>
                   <td className="p-2 text-rose-600 dark:text-rose-400">10,0 điểm</td>
                 </tr>
 
@@ -640,6 +717,7 @@ export const MatrixSpecGenerator: React.FC = () => {
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700">30%</td>
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700">20%</td>
                   <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700">20%</td>
+                  <td colSpan={3} className="p-2 border-r border-slate-300 dark:border-slate-700">30%</td>
                   <td className="p-2 border-r border-slate-300 dark:border-slate-700">40%</td>
                   <td className="p-2 border-r border-slate-300 dark:border-slate-700">30%</td>
                   <td className="p-2 border-r border-slate-300 dark:border-slate-700">30%</td>
@@ -666,11 +744,14 @@ export const MatrixSpecGenerator: React.FC = () => {
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 gap-3">
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
+                TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH • TỔ TỰ NHIÊN • NĂM HỌC 2026 - 2027
+              </div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 mt-0.5">
                 <Layers className="w-5 h-5 text-purple-600" />
                 2. BẢN ĐẶC TẢ ĐỀ KIỂM TRA ĐỊNH KÌ THEO CÔNG VĂN 7991/BGDĐT-GDTrH
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Phụ lục 2 kèm theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ Giáo dục và Đào tạo
               </p>
             </div>
@@ -747,13 +828,13 @@ export const MatrixSpecGenerator: React.FC = () => {
         <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
           {/* Header of paper test */}
           <div className="border-b-2 border-slate-200 dark:border-slate-700 pb-6 text-center space-y-2">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-bold text-slate-500 uppercase">
-              <span>{schoolName}</span>
-              <span>ĐỀ KIỂM TRA ĐỊNH KỲ MÔN TOÁN LỚP 9</span>
-              <span>MÃ ĐỀ: {examCode}</span>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-bold uppercase">
+              <span className="text-purple-700 dark:text-purple-300 font-extrabold">{schoolName} – {deptName}</span>
+              <span className="text-slate-600 dark:text-slate-400 font-bold">{examName}</span>
+              <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">MÃ ĐỀ: {examCode}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white pt-2">
-              BÀI KIỂM TRA ĐỊNH KỲ HỌC KÌ MÔN TOÁN 9
+              {examName.toUpperCase()} (NĂM HỌC {schoolYear})
             </h2>
             <p className="text-xs text-slate-600 dark:text-slate-400">
               Thời gian làm bài: <strong>{duration} phút</strong> (Không kể thời gian phát đề) • Cấu trúc chuẩn theo <strong>Công văn số 7991/BGDĐT-GDTrH</strong>
@@ -952,11 +1033,14 @@ export const MatrixSpecGenerator: React.FC = () => {
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 gap-3">
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">
+                TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH • TỔ TỰ NHIÊN • NĂM HỌC 2026 - 2027
+              </div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 mt-0.5">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 4. HƯỚNG DẪN CHẤM VÀ BIỂU ĐIỂM CHI TIẾT THEO CÔNG VĂN 7991/BGDĐT-GDTrH
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Quy định biểu điểm từng bước (0,25đ) và thang điểm chuẩn cho câu hỏi Đúng - Sai
               </p>
             </div>

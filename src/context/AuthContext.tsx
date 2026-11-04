@@ -66,36 +66,36 @@ const DEFAULT_USERS: User[] = [
     password: 'toan@13579',
     role: 'ADMIN',
     avatar: '👨‍🏫',
-    school: 'Tác giả & Quản trị viên Hệ thống',
-    className: 'Toán 9 GDPT 2018',
+    school: 'Trường TH, THCS Nguyễn Hữu Cảnh',
+    className: 'Tác giả & Quản trị viên Hệ thống',
     createdAt: '2026-01-01',
     isLocked: false,
     mustChangePassword: false,
   },
   {
     id: 'user-teacher',
-    name: 'Cô Nguyễn Thu Hà',
-    username: 'giaovien.thuha',
-    email: 'thuha.toan9@edu.vn',
+    name: 'Giáo viên Toán',
+    username: 'giaovien',
+    email: 'giaovien@toan9.edu.vn',
     password: 'giaovien@123',
     role: 'TEACHER',
     avatar: '👩‍🏫',
-    school: 'THCS Giảng Võ',
-    className: 'Chủ nhiệm 9A1 & 9A2',
+    school: 'Trường TH, THCS Nguyễn Hữu Cảnh',
+    className: 'Tổ Tự nhiên - Khối 9',
     createdAt: '2026-01-10',
     isLocked: false,
     mustChangePassword: true, // Yêu cầu đổi mật khẩu lần đầu
   },
   {
     id: 'user-student',
-    name: 'Em Trần Minh Đức',
-    username: 'hocsinh.minhduc',
-    email: 'minhduc.hocsinh9@gmail.com',
+    name: 'Học sinh Lớp 9',
+    username: 'hocsinh',
+    email: 'hocsinh@toan9.edu.vn',
     password: 'hocsinh@123',
     role: 'STUDENT',
     avatar: '🧑‍🎓',
-    school: 'THCS Lê Quý Đôn',
-    className: 'Lớp 9A1',
+    school: 'Trường TH, THCS Nguyễn Hữu Cảnh',
+    className: 'Lớp 9',
     createdAt: '2026-02-15',
     isLocked: false,
     mustChangePassword: true, // Yêu cầu đổi mật khẩu lần đầu
@@ -121,6 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           username: 'admin',
           role: 'ADMIN',
           password: parsed[adminIndex].password || 'toan@13579',
+          school: parsed[adminIndex].school || 'Trường TH, THCS Nguyễn Hữu Cảnh',
           isLocked: false,
         };
       } else {
@@ -141,6 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   // Current logged in user with session validation
+  // Default to null on fresh visits (e.g. Netlify/GitHub/first open) so user is not automatically logged in as Admin
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
       // 1. Check persistent secure session
@@ -192,10 +194,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      // Default to initial Admin Teacher Lê Thanh Tùng for seamless first experience
-      return DEFAULT_USERS[0];
+      // Unauthenticated by default for fresh launch / Netlify deployment
+      return null;
     } catch {
-      return DEFAULT_USERS[0];
+      return null;
     }
   });
 

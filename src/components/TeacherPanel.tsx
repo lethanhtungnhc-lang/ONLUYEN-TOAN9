@@ -54,11 +54,11 @@ export const TeacherPanel: React.FC = () => {
   const studentAccounts = allUsers.filter(u => u.role === 'STUDENT');
   
   const classStudents = [
-    { id: 'st-1', name: 'Trần Minh Đức', username: 'hocsinh.minhduc', email: 'minhduc.hocsinh9@gmail.com', school: 'THCS Lê Quý Đôn', className: currentClass?.name || '9A1', progress: 85, avgScore: 8.75, status: 'Hoàn thành' },
-    { id: 'st-2', name: 'Lê Hoàng Nam', username: 'lehoangnam9a1', email: 'hoangnam9a1@gmail.com', school: 'THCS Giảng Võ', className: currentClass?.name || '9A1', progress: 75, avgScore: 8.2, status: 'Hoàn thành' },
-    { id: 'st-3', name: 'Nguyễn Thảo Linh', username: 'nguyenthaolinh9a', email: 'thaolinh.toan@gmail.com', school: 'THCS Giảng Võ', className: currentClass?.name || '9A1', progress: 95, avgScore: 9.5, status: 'Hoàn thành' },
-    { id: 'st-4', name: 'Vũ Đức Anh', username: 'vuducanh.toan9', email: 'ducanh9a1@gmail.com', school: 'THCS Cầu Giấy', className: currentClass?.name || '9A1', progress: 60, avgScore: 7.0, status: 'Đang làm' },
-    { id: 'st-5', name: 'Phạm Quỳnh Chi', username: 'phamquynhchi9', email: 'quynhchi9@gmail.com', school: 'THCS Trưng Vương', className: currentClass?.name || '9A1', progress: 90, avgScore: 9.0, status: 'Hoàn thành' },
+    { id: 'st-1', name: 'Nguyễn Văn An', username: 'hocsinh.vanan', email: 'vanan.hocsinh9@gmail.com', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', className: currentClass?.name || '9A1', progress: 85, avgScore: 8.75, status: 'Hoàn thành' },
+    { id: 'st-2', name: 'Lê Hoàng Nam', username: 'lehoangnam9a1', email: 'hoangnam9a1@gmail.com', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', className: currentClass?.name || '9A1', progress: 75, avgScore: 8.2, status: 'Hoàn thành' },
+    { id: 'st-3', name: 'Nguyễn Thảo Linh', username: 'nguyenthaolinh9a', email: 'thaolinh.toan@gmail.com', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', className: currentClass?.name || '9A1', progress: 95, avgScore: 9.5, status: 'Hoàn thành' },
+    { id: 'st-4', name: 'Vũ Đức Anh', username: 'vuducanh.toan9', email: 'ducanh9a1@gmail.com', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', className: currentClass?.name || '9A1', progress: 60, avgScore: 7.0, status: 'Đang làm' },
+    { id: 'st-5', name: 'Phạm Quỳnh Chi', username: 'phamquynhchi9', email: 'quynhchi9@gmail.com', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', className: currentClass?.name || '9A1', progress: 90, avgScore: 9.0, status: 'Hoàn thành' },
   ];
 
   // Include any extra registered students into teacher's view

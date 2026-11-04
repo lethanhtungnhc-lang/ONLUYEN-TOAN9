@@ -160,10 +160,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setSuccessMsg(
       `Đã chuyển sang vai trò: ${
         role === 'ADMIN'
-          ? 'Quản trị viên (Teacher Lê Thanh Tùng - admin)'
+          ? 'Quản trị viên (admin)'
           : role === 'TEACHER'
-          ? 'Giáo viên (Cô Nguyễn Thu Hà)'
-          : 'Học sinh (Em Trần Minh Đức)'
+          ? 'Giáo viên'
+          : 'Học sinh'
       }`
     );
     setTimeout(() => {
@@ -283,7 +283,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold shadow-xs hover:border-emerald-500 border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-0.5 transition cursor-pointer"
               >
                 <span>👩‍🏫 Giáo viên</span>
-                <span className="text-[10px] text-slate-500">Cô Thu Hà</span>
+                <span className="text-[10px] text-slate-500 font-mono">giaovien</span>
               </button>
               <button
                 type="button"
@@ -291,7 +291,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold shadow-xs hover:border-blue-500 border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-0.5 transition cursor-pointer"
               >
                 <span>🧑‍🎓 Học sinh</span>
-                <span className="text-[10px] text-slate-500">Minh Đức</span>
+                <span className="text-[10px] text-slate-500 font-mono">hocsinh</span>
               </button>
             </div>
           </div>

@@ -212,7 +212,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             (role as string) === 'ADMIN' ? 'font-bold text-purple-600 dark:text-purple-400 bg-purple-50/50 dark:bg-purple-950/30' : 'text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          <span>👨‍🏫 Quản trị viên (Teacher Tùng)</span>
+                          <span>👨‍🏫 Quản trị viên</span>
                           {(role as string) === 'ADMIN' && <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />}
                         </button>
 
@@ -222,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             (role as string) === 'TEACHER' ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/30' : 'text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          <span>👩‍🏫 Giáo viên (Cô Thu Hà)</span>
+                          <span>👩‍🏫 Giáo viên</span>
                           {(role as string) === 'TEACHER' && <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />}
                         </button>
 
@@ -232,7 +232,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             (role as string) === 'STUDENT' ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30' : 'text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          <span>🧑‍🎓 Học sinh (Em Minh Đức)</span>
+                          <span>🧑‍🎓 Học sinh</span>
                           {(role as string) === 'STUDENT' && <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />}
                         </button>
 

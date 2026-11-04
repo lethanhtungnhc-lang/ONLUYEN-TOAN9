@@ -396,24 +396,25 @@ export const AdminPanel: React.FC = () => {
 
   const handleExportComprehensiveReport = () => {
     const bom = "\uFEFF";
-    let csv = bom + "BÁO CÁO TỔNG KẾT ĐÁNH GIÁ NĂNG LỰC HỌC SINH MÔN TOÁN 9\n";
-    csv += "CHƯƠNG TRÌNH TOÁN 9 - CHUẨN THÔNG TƯ 22/2021/TT-BGDĐT\n";
+    let csv = bom + "TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH - TỔ TỰ NHIÊN\n";
+    csv += "BÁO CÁO TỔNG KẾT ĐÁNH GIÁ NĂNG LỰC HỌC SINH MÔN TOÁN 9\n";
+    csv += "CHƯƠNG TRÌNH TOÁN 9 - CHUẨN THÔNG TƯ 22/2021/TT-BGDĐT & CV 7991/BGDĐT-GDTrH\n";
     csv += `Thời gian xuất báo cáo: ${new Date().toLocaleDateString('vi-VN')} ${new Date().toLocaleTimeString('vi-VN')}\n`;
     csv += `Quản trị viên / Tác giả: Teacher Lê Thanh Tùng\n\n`;
-    csv += "STT,Họ và tên,Email,Lớp,Điểm TB,Xếp loại Thông tư 22,Tiến độ hoàn thành,Chuyên đề cần củng cố\n";
+    csv += "STT,Họ và tên,Email,Lớp,Trường học,Điểm TB,Xếp loại Thông tư 22,Tiến độ hoàn thành,Chuyên đề cần củng cố\n";
 
     const sampleStudents = [
-      { name: 'Trần Minh Đức', email: 'minhduc.hocsinh9@gmail.com', class: '9A1', avg: 8.75, grade: 'Tốt', progress: '85%', weak: 'Cực trị bất đẳng thức' },
-      { name: 'Lê Hoàng Nam', email: 'hoangnam9a1@gmail.com', class: '9A1', avg: 8.2, grade: 'Tốt', progress: '78%', weak: 'Tham số m phương trình bậc hai' },
-      { name: 'Nguyễn Thảo Linh', email: 'thaolinh.toan@gmail.com', class: '9A1', avg: 9.5, grade: 'Tốt', progress: '98%', weak: 'Không' },
-      { name: 'Vũ Đức Anh', email: 'ducanh9a1@gmail.com', class: '9A1', avg: 5.2, grade: 'Đạt', progress: '58%', weak: 'Hệ thức Viète' },
-      { name: 'Phạm Quỳnh Chi', email: 'quynhchi9@gmail.com', class: '9A2', avg: 9.0, grade: 'Tốt', progress: '92%', weak: 'Đường tròn ngoại tiếp tam giác' },
-      { name: 'Nguyễn Văn Hùng', email: 'vanhung9b@gmail.com', class: '9A2', avg: 4.8, grade: 'Chưa đạt', progress: '42%', weak: 'Tứ giác nội tiếp' },
-      { name: 'Trần Thị Mai', email: 'thimai9a2@gmail.com', class: '9A2', avg: 5.5, grade: 'Đạt', progress: '55%', weak: 'Rút gọn căn thức' }
+      { name: 'Nguyễn Văn An', email: 'vanan9a1@gmail.com', class: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avg: 8.75, grade: 'Tốt', progress: '85%', weak: 'Cực trị bất đẳng thức' },
+      { name: 'Lê Hoàng Nam', email: 'hoangnam9a1@gmail.com', class: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avg: 8.2, grade: 'Tốt', progress: '78%', weak: 'Tham số m phương trình bậc hai' },
+      { name: 'Nguyễn Thảo Linh', email: 'thaolinh.toan@gmail.com', class: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avg: 9.5, grade: 'Tốt', progress: '98%', weak: 'Không' },
+      { name: 'Vũ Đức Anh', email: 'ducanh9a1@gmail.com', class: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avg: 5.2, grade: 'Đạt', progress: '58%', weak: 'Hệ thức Viète' },
+      { name: 'Phạm Quỳnh Chi', email: 'quynhchi9@gmail.com', class: '9A2', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avg: 9.0, grade: 'Tốt', progress: '92%', weak: 'Đường tròn ngoại tiếp tam giác' },
+      { name: 'Nguyễn Văn Hùng', email: 'vanhung9b@gmail.com', class: '9A2', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avg: 4.8, grade: 'Chưa đạt', progress: '42%', weak: 'Tứ giác nội tiếp' },
+      { name: 'Trần Thị Mai', email: 'thimai9a2@gmail.com', class: '9A2', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avg: 5.5, grade: 'Đạt', progress: '55%', weak: 'Rút gọn căn thức' }
     ];
 
     sampleStudents.forEach((st, i) => {
-      csv += `${i + 1},"${st.name}","${st.email}","${st.class}",${st.avg},"${st.grade}","${st.progress}","${st.weak}"\n`;
+      csv += `${i + 1},"${st.name}","${st.email}","${st.class}","${st.school}",${st.avg},"${st.grade}","${st.progress}","${st.weak}"\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -430,13 +431,13 @@ export const AdminPanel: React.FC = () => {
   const handleExportExcelReport = () => {
     const studentUsers = allUsers.filter(u => u.role === 'STUDENT');
     const defaultData: StudentExportData[] = [
-      { stt: 1, fullName: 'Trần Minh Đức', username: 'hocsinh.minhduc', email: 'minhduc.hocsinh9@gmail.com', className: '9A1', school: 'THCS Lê Quý Đôn', avgScore: 8.75, rankTT22: 'Tốt', progress: '85%', weakTopics: 'Cực trị bất đẳng thức' },
-      { stt: 2, fullName: 'Lê Hoàng Nam', username: 'lehoangnam9a1', email: 'hoangnam9a1@gmail.com', className: '9A1', school: 'THCS Giảng Võ', avgScore: 8.2, rankTT22: 'Tốt', progress: '78%', weakTopics: 'Tham số m phương trình bậc hai' },
-      { stt: 3, fullName: 'Nguyễn Thảo Linh', username: 'nguyenthaolinh9a', email: 'thaolinh.toan@gmail.com', className: '9A1', school: 'THCS Giảng Võ', avgScore: 9.5, rankTT22: 'Tốt', progress: '98%', weakTopics: 'Không có (Nắm vững toàn bộ)' },
-      { stt: 4, fullName: 'Vũ Đức Anh', username: 'vuducanh.toan9', email: 'ducanh9a1@gmail.com', className: '9A1', school: 'THCS Cầu Giấy', avgScore: 5.2, rankTT22: 'Đạt', progress: '58%', weakTopics: 'Hệ thức Viète' },
-      { stt: 5, fullName: 'Phạm Quỳnh Chi', username: 'phamquynhchi9', email: 'quynhchi9@gmail.com', className: '9A2', school: 'THCS Trưng Vương', avgScore: 9.0, rankTT22: 'Tốt', progress: '92%', weakTopics: 'Đường tròn ngoại tiếp tam giác' },
-      { stt: 6, fullName: 'Nguyễn Văn Hùng', username: 'nguyenvanhung9b', email: 'vanhung9b@gmail.com', className: '9A2', school: 'THCS Nguyễn Tri Phương', avgScore: 4.8, rankTT22: 'Chưa đạt', progress: '42%', weakTopics: 'Tứ giác nội tiếp' },
-      { stt: 7, fullName: 'Trần Thị Mai', username: 'tranthimai9a2', email: 'thimai9a2@gmail.com', className: '9A2', school: 'THCS Nghĩa Tân', avgScore: 5.5, rankTT22: 'Đạt', progress: '55%', weakTopics: 'Rút gọn căn thức' }
+      { stt: 1, fullName: 'Nguyễn Văn An', username: 'vanan9a1', email: 'vanan9a1@gmail.com', className: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avgScore: 8.75, rankTT22: 'Tốt', progress: '85%', weakTopics: 'Cực trị bất đẳng thức' },
+      { stt: 2, fullName: 'Lê Hoàng Nam', username: 'lehoangnam9a1', email: 'hoangnam9a1@gmail.com', className: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avgScore: 8.2, rankTT22: 'Tốt', progress: '78%', weakTopics: 'Tham số m phương trình bậc hai' },
+      { stt: 3, fullName: 'Nguyễn Thảo Linh', username: 'nguyenthaolinh9a', email: 'thaolinh.toan@gmail.com', className: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avgScore: 9.5, rankTT22: 'Tốt', progress: '98%', weakTopics: 'Không có (Nắm vững toàn bộ)' },
+      { stt: 4, fullName: 'Vũ Đức Anh', username: 'vuducanh.toan9', email: 'ducanh9a1@gmail.com', className: '9A1', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avgScore: 5.2, rankTT22: 'Đạt', progress: '58%', weakTopics: 'Hệ thức Viète' },
+      { stt: 5, fullName: 'Phạm Quỳnh Chi', username: 'phamquynhchi9', email: 'quynhchi9@gmail.com', className: '9A2', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avgScore: 9.0, rankTT22: 'Tốt', progress: '92%', weakTopics: 'Đường tròn ngoại tiếp tam giác' },
+      { stt: 6, fullName: 'Nguyễn Văn Hùng', username: 'nguyenvanhung9b', email: 'vanhung9b@gmail.com', className: '9A2', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avgScore: 4.8, rankTT22: 'Chưa đạt', progress: '42%', weakTopics: 'Tứ giác nội tiếp' },
+      { stt: 7, fullName: 'Trần Thị Mai', username: 'tranthimai9a2', email: 'thimai9a2@gmail.com', className: '9A2', school: 'Trường TH, THCS Nguyễn Hữu Cảnh', avgScore: 5.5, rankTT22: 'Đạt', progress: '55%', weakTopics: 'Rút gọn căn thức' }
     ];
 
     studentUsers.forEach((u) => {
@@ -447,7 +448,7 @@ export const AdminPanel: React.FC = () => {
           username: u.username,
           email: u.email,
           className: u.className || 'Lớp 9',
-          school: u.school || 'THCS',
+          school: u.school || 'Trường TH, THCS Nguyễn Hữu Cảnh',
           avgScore: 8.5,
           rankTT22: 'Tốt',
           progress: '70%',
