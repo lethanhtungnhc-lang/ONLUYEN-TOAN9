@@ -526,7 +526,7 @@ export const AdminPanel: React.FC = () => {
           <button
             onClick={() => setShowChangePassModal(true)}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-semibold border border-purple-200 dark:border-purple-800 transition cursor-pointer"
-            title="Đổi mật khẩu tài khoản quản trị viên admin (mặc định toan@13579)"
+            title="Đổi mật khẩu tài khoản quản trị viên admin (mặc định 12345678)"
           >
             <KeyRound className="w-4 h-4 text-purple-600" /> Đổi mật khẩu admin
           </button>
@@ -821,7 +821,7 @@ export const AdminPanel: React.FC = () => {
                   })
                   .map((u, idx) => {
                     const isRevealed = !!revealedPasswords[u.id];
-                    const rawPass = u.password || 'toan@13579';
+                    const rawPass = u.password || '12345678';
                     const isLocked = !!u.isLocked;
 
                     return (

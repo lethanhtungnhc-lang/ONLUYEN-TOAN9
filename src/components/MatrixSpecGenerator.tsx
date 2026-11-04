@@ -102,6 +102,21 @@ interface SpecItem7991 {
   tfBiet: number; tfHieu: number; tfVanDung: number;
   saBiet: number; saHieu: number; saVanDung: number;
   tlBiet: number; tlHieu: number; tlVanDung: number;
+  // Năng lực và nhãn chi tiết tương ứng từng ô câu hỏi theo Công văn 7991
+  mcBietComp?: string;
+  mcHieuComp?: string;
+  mcVanDungComp?: string;
+  tfBietComp?: string;
+  tfHieuComp?: string;
+  tfVanDungComp?: string;
+  saBietComp?: string;
+  saHieuComp?: string;
+  saVanDungComp?: string;
+  tlBietComp?: string;
+  tlHieuComp?: string;
+  tlVanDungComp?: string;
+  tlHieuLabel?: string;
+  tlVanDungLabel?: string;
 }
 
 const DEFAULT_SPEC_7991: SpecItem7991[] = [
@@ -113,9 +128,13 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     reqBiet: 'Nhận biết điều kiện xác định của biểu thức √(A). Nhận biết hằng đẳng thức √(A²) = |A|. Tính giá trị căn bậc hai số học của một số dương.',
     reqHieu: 'Thực hiện được các phép biến đổi đơn giản: đưa thừa số ra ngoài/vào trong dấu căn, trục căn thức ở mẫu. Rút gọn biểu thức chứa căn bậc hai số học.',
     reqVanDung: 'Vận dụng rút gọn biểu thức đại số chứa căn phức hợp, tìm giá trị của biến để biểu thức nguyên hoặc đạt giá trị thỏa mãn điều kiện cho trước.',
-    mcBiet: 2, mcHieu: 1, mcVanDung: 0,
-    tfBiet: 1, tfHieu: 0, tfVanDung: 0,
-    saBiet: 1, saHieu: 0, saVanDung: 0,
+    mcBiet: 2, mcBietComp: 'NL1: Tư duy & lập luận',
+    mcHieu: 1, mcHieuComp: 'NL1: Tính toán căn thức',
+    mcVanDung: 0,
+    tfBiet: 1, tfBietComp: 'NL1, NL4: Giao tiếp toán học',
+    tfHieu: 0, tfVanDung: 0,
+    saBiet: 1, saBietComp: 'NL1: Rút gọn số học',
+    saHieu: 0, saVanDung: 0,
     tlBiet: 0, tlHieu: 0, tlVanDung: 0,
   },
   {
@@ -126,10 +145,15 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     reqBiet: 'Nhận biết nghiệm của phương trình bậc nhất hai ẩn và hệ hai phương trình bậc nhất hai ẩn dạng tổng quát.',
     reqHieu: 'Giải được hệ hai phương trình bậc nhất hai ẩn bằng phương pháp thế hoặc phương pháp cộng đại số.',
     reqVanDung: 'Giải quyết được một số vấn đề thực tiễn gắn với hệ phương trình (bài toán chuyển động, bài toán năng suất, kinh tế, tỉ số phần trăm).',
-    mcBiet: 2, mcHieu: 0, mcVanDung: 0,
-    tfBiet: 0, tfHieu: 1, tfVanDung: 0,
+    mcBiet: 2, mcBietComp: 'NL1: Nhận biết nghiệm hệ',
+    mcHieu: 0, mcVanDung: 0,
+    tfBiet: 0,
+    tfHieu: 1, tfHieuComp: 'NL3: Giải quyết vấn đề',
+    tfVanDung: 0,
     saBiet: 0, saHieu: 0, saVanDung: 0,
-    tlBiet: 0, tlHieu: 1, tlVanDung: 0,
+    tlBiet: 0,
+    tlHieu: 1, tlHieuLabel: '1 bài (1,0đ)', tlHieuComp: 'NL2: Mô hình hóa toán học',
+    tlVanDung: 0,
   },
   {
     id: 3,
@@ -139,9 +163,12 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     reqBiet: 'Nhận biết dạng tổng quát ax² + bx + c = 0 (a ≠ 0). Nhận biết biệt thức Δ = b² - 4ac và điều kiện có nghiệm.',
     reqHieu: 'Vận dụng công thức nghiệm hoặc định lí Viète để tính tổng S = -b/a và tích P = c/a của hai nghiệm mà không cần giải phương trình.',
     reqVanDung: 'Tìm giá trị của tham số m để phương trình có hai nghiệm thỏa mãn biểu thức đối xứng hoặc điều kiện về dấu của nghiệm.',
-    mcBiet: 1, mcHieu: 1, mcVanDung: 0,
+    mcBiet: 1, mcBietComp: 'NL1: Nhận biết hệ số & nghiệm',
+    mcHieu: 1, mcHieuComp: 'NL1: Ứng dụng hệ thức Viète',
+    mcVanDung: 0,
     tfBiet: 0, tfHieu: 0, tfVanDung: 0,
-    saBiet: 0, saHieu: 0, saVanDung: 1,
+    saBiet: 0, saHieu: 0,
+    saVanDung: 1, saVanDungComp: 'NL3: Giải quyết vấn đề tham số',
     tlBiet: 0, tlHieu: 0, tlVanDung: 0,
   },
   {
@@ -152,10 +179,14 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     reqBiet: 'Nhận biết định nghĩa tỉ số lượng giác sin, cos, tan, cot. Nhận biết tính chất của tiếp tuyến và góc nội tiếp chắn nửa đường tròn.',
     reqHieu: 'Tính được độ dài đoạn thẳng, tỉ số lượng giác trong tam giác vuông. Chứng minh được tứ giác nội tiếp bằng dấu hiệu tổng hai góc đối diện bằng 180°.',
     reqVanDung: 'Vận dụng tính chất tiếp tuyến, đường kính và dây cung để giải quyết bài toán đồng quy, thẳng hàng và tỉ số diện tích.',
-    mcBiet: 2, mcHieu: 1, mcVanDung: 0,
+    mcBiet: 2, mcBietComp: 'NL1: Lượng giác & góc đường tròn',
+    mcHieu: 1, mcHieuComp: 'NL1: Tứ giác nội tiếp',
+    mcVanDung: 0,
     tfBiet: 0, tfHieu: 0, tfVanDung: 0,
-    saBiet: 1, saHieu: 0, saVanDung: 0,
-    tlBiet: 0, tlHieu: 0, tlVanDung: 1,
+    saBiet: 1, saBietComp: 'NL1: Hệ thức lượng tam giác vuông',
+    saHieu: 0, saVanDung: 0,
+    tlBiet: 0, tlHieu: 0,
+    tlVanDung: 1, tlVanDungLabel: '1 bài (1,5đ)', tlVanDungComp: 'NL1, NL5: Lập luận & vẽ hình',
   },
   {
     id: 5,
@@ -165,10 +196,14 @@ const DEFAULT_SPEC_7991: SpecItem7991[] = [
     reqBiet: 'Nhận biết công thức tính diện tích xung quanh, thể tích hình trụ, hình nón, hình cầu.',
     reqHieu: 'Tính toán diện tích, thể tích các vật thể hình học trong đời sống thực tế.',
     reqVanDung: 'Vận dụng bất đẳng thức Cauchy hoặc phương pháp biến đổi đại số để tìm giá trị lớn nhất, giá trị nhỏ nhất của biểu thức.',
-    mcBiet: 1, mcHieu: 1, mcVanDung: 0,
+    mcBiet: 1, mcBietComp: 'NL1: Thể tích khối trụ',
+    mcHieu: 1, mcHieuComp: 'NL1: Góc nội tiếp & tính chất',
+    mcVanDung: 0,
     tfBiet: 0, tfHieu: 0, tfVanDung: 0,
-    saBiet: 0, saHieu: 0, saVanDung: 1,
-    tlBiet: 0, tlHieu: 0, tlVanDung: 1,
+    saBiet: 0, saHieu: 0,
+    saVanDung: 1, saVanDungComp: 'NL2, NL3: Mô hình hóa thực tiễn',
+    tlBiet: 0, tlHieu: 0,
+    tlVanDung: 1, tlVanDungLabel: '1 bài (0,5đ)', tlVanDungComp: 'NL3: BĐT Cauchy & Cực trị',
   },
 ];
 
@@ -213,7 +248,7 @@ export const MatrixSpecGenerator: React.FC = () => {
   const scoreHieu = 3.0; // 30%
   const scoreVanDung = 3.0; // 30%
 
-  // Export to Word document format with full CV 7991 official template
+  // Export to Word document format with full 4 parts of CV 7991 official template
   const handleExportWord = () => {
     const content = `
       <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -221,17 +256,20 @@ export const MatrixSpecGenerator: React.FC = () => {
         <meta charset='utf-8'>
         <title>${examName} - THEO CV 7991/BGDDT-GDTrH</title>
         <style>
-          body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.35; color: #000; margin: 20px; }
+          body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.35; color: #000; margin: 20px; }
           table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-          th, td { border: 1px solid black; padding: 6px; text-align: center; font-size: 11pt; }
+          th, td { border: 1px solid black; padding: 5px; text-align: center; font-size: 10.5pt; }
           .left { text-align: left; }
           .bold { font-weight: bold; }
           h2, h3, h4 { text-align: center; margin: 4px 0; }
-          .footnote { font-size: 10pt; font-style: italic; margin-top: 6px; }
+          h2 { font-size: 14pt; }
+          h3 { font-size: 13pt; margin-top: 15px; }
+          h4 { font-size: 12pt; text-align: left; margin-top: 10px; }
+          .footnote { font-size: 9.5pt; font-style: italic; margin-top: 6px; }
         </style>
       </head>
       <body>
-        <table style="border: none; width: 100%; margin-bottom: 20px;">
+        <table style="border: none; width: 100%; margin-bottom: 15px;">
           <tr style="border: none;">
             <td style="border: none; width: 50%; text-align: center; vertical-align: top;">
               <strong>TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH</strong><br/>
@@ -248,11 +286,12 @@ export const MatrixSpecGenerator: React.FC = () => {
 
         <h2>${examName.toUpperCase()}</h2>
         <h3>MÔN: TOÁN LỚP 9 – CHƯƠNG TRÌNH GDPT 2018</h3>
-        <p style="text-align: center;"><em>(Thực hiện theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ Giáo dục và Đào tạo)</em></p>
+        <p style="text-align: center;"><em>(Thực hiện đầy đủ 4 phần theo Công văn số 7991/BGDĐT-GDTrH ngày 17/12/2024 của Bộ Giáo dục và Đào tạo)</em></p>
         <p style="text-align: center;"><strong>Thời gian làm bài: ${duration} phút</strong> (Không kể thời gian phát đề) - <strong>Mã đề: ${examCode}</strong></p>
         <hr style="border: 0.5px solid #000; margin: 15px 0;"/>
 
-        <h3>PHẦN 1: MA TRẬN ĐỀ KIỂM TRA ĐỊNH KÌ (PHỤ LỤC 1 - THEO CÔNG VĂN 7991/BGDĐT-GDTrH)</h3>
+        <!-- ==================== PHẦN 1: MA TRẬN ==================== -->
+        <h3 style="text-align: left;">PHẦN 1: KHUNG MA TRẬN ĐỀ KIỂM TRA ĐỊNH KÌ (PHỤ LỤC 1 - THEO CÔNG VĂN 7991/BGDĐT-GDTrH)</h3>
         <table>
           <thead>
             <tr style="background-color: #f2f2f2;">
@@ -322,71 +361,143 @@ export const MatrixSpecGenerator: React.FC = () => {
             </tr>
           </tbody>
         </table>
-        <p class="footnote"><em>Ghi chú theo CV 7991: [2] Mỗi câu hỏi Đúng - Sai gồm 4 ý nhỏ a, b, c, d (Barem: đúng 1 ý = 0,1đ; đúng 2 ý = 0,25đ; đúng 3 ý = 0,5đ; đúng 4 ý = 1,0đ); [3] Câu hỏi ngắn điền đáp số; [5] Tỉ lệ điểm TNKQ 70% (7,0 điểm) và Tự luận 30% (3,0 điểm). Mức độ: Biết 40% (4,0đ) - Hiểu 30% (3,0đ) - Vận dụng 30% (3,0đ).</em></p>
+        <p class="footnote"><em>Ghi chú: [2] Mỗi câu hỏi Đúng - Sai gồm 4 ý nhỏ a, b, c, d (Barem: đúng 1 ý = 0,1đ; đúng 2 ý = 0,25đ; đúng 3 ý = 0,5đ; đúng 4 ý = 1,0đ); [3] Câu hỏi ngắn điền đáp số; [5] Tỉ lệ điểm TNKQ 70% (7,0 điểm) và Tự luận 30% (3,0 điểm). Mức độ: Biết 40% (4,0đ) - Hiểu 30% (3,0đ) - Vận dụng 30% (3,0đ).</em></p>
 
+        <!-- ==================== PHẦN 2: BẢN ĐẶC TẢ ==================== -->
         <div style="page-break-before: always;"></div>
-        <h3>PHẦN 2: ĐỀ KIỂM TRA ĐỊNH KÌ (THEO CHUẨN CÔNG VĂN 7991)</h3>
-        <p><strong>Mã đề: ${examCode}</strong></p>
+        <h3 style="text-align: left;">PHẦN 2: BẢN ĐẶC TẢ ĐỀ KIỂM TRA ĐỊNH KÌ (PHỤ LỤC 2 - THEO CÔNG VĂN 7991/BGDĐT-GDTrH)</h3>
+        <table>
+          <thead>
+            <tr style="background-color: #f2f2f2;">
+              <th rowspan="2">TT</th>
+              <th rowspan="2">Chủ đề / Chương</th>
+              <th rowspan="2">Nội dung / đơn vị kiến thức</th>
+              <th rowspan="2" style="width: 32%;">Yêu cầu cần đạt & Năng lực toán học [6]</th>
+              <th colspan="9">Số câu hỏi ở các mức độ đánh giá (TNKQ)</th>
+              <th colspan="3">Tự luận</th>
+            </tr>
+            <tr style="background-color: #f2f2f2;">
+              <th colspan="3">Nhiều lựa chọn (3,0đ)</th>
+              <th colspan="3">"Đúng - Sai" (2,0đ)</th>
+              <th colspan="3">Trả lời ngắn (2,0đ)</th>
+              <th>Biết</th><th>Hiểu</th><th>VD</th>
+            </tr>
+            <tr style="background-color: #e6f2ff; font-size: 9.5pt;">
+              <th></th><th></th><th></th><th></th>
+              <th>Biết</th><th>Hiểu</th><th>VD</th>
+              <th>Biết</th><th>Hiểu</th><th>VD</th>
+              <th>Biết</th><th>Hiểu</th><th>VD</th>
+              <th></th><th></th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${DEFAULT_SPEC_7991.map((item) => {
+              const fmtCell = (count?: number, label?: string, comp?: string) => {
+                if (!count) return '-';
+                const text = label || (count + ' câu');
+                const compHtml = comp ? `<br/><span style="color: #6b21a8; font-size: 8pt; font-weight: bold; display: inline-block; margin-top: 2px;">(${comp})</span>` : '';
+                return `<strong>${text}</strong>${compHtml}`;
+              };
+              return `
+              <tr>
+                <td>${item.id}</td>
+                <td class="left bold">${item.topic}</td>
+                <td class="left">${item.subtopic}</td>
+                <td class="left" style="font-size: 10pt;">
+                  <div style="color: #6b21a8; font-weight: bold; margin-bottom: 2px;">${item.competencies}</div>
+                  <div><strong>Nhận biết:</strong> ${item.reqBiet}</div>
+                  <div><strong>Thông hiểu:</strong> ${item.reqHieu}</div>
+                  <div><strong>Vận dụng:</strong> ${item.reqVanDung}</div>
+                </td>
+                <td>${fmtCell(item.mcBiet, item.mcBiet ? `${item.mcBiet} câu` : '', item.mcBietComp)}</td>
+                <td>${fmtCell(item.mcHieu, item.mcHieu ? `${item.mcHieu} câu` : '', item.mcHieuComp)}</td>
+                <td>${fmtCell(item.mcVanDung, item.mcVanDung ? `${item.mcVanDung} câu` : '', item.mcVanDungComp)}</td>
+
+                <td>${fmtCell(item.tfBiet, '(1c) 4 ý', item.tfBietComp)}</td>
+                <td>${fmtCell(item.tfHieu, '(1c) 4 ý', item.tfHieuComp)}</td>
+                <td>${fmtCell(item.tfVanDung, '(1c) 4 ý', item.tfVanDungComp)}</td>
+
+                <td>${fmtCell(item.saBiet, item.saBiet ? `${item.saBiet} câu` : '', item.saBietComp)}</td>
+                <td>${fmtCell(item.saHieu, item.saHieu ? `${item.saHieu} câu` : '', item.saHieuComp)}</td>
+                <td>${fmtCell(item.saVanDung, item.saVanDung ? `${item.saVanDung} câu` : '', item.saVanDungComp)}</td>
+
+                <td>${fmtCell(item.tlBiet, '1 bài', item.tlBietComp)}</td>
+                <td>${fmtCell(item.tlHieu, item.tlHieuLabel || '1 bài (1,0đ)', item.tlHieuComp)}</td>
+                <td>${fmtCell(item.tlVanDung, item.tlVanDungLabel || '1 bài', item.tlVanDungComp)}</td>
+              </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+        <p class="footnote"><em>Ghi chú: [6] Yêu cầu cần đạt gắn liền với 5 năng lực toán học: NL1 (Tư duy và lập luận), NL2 (Mô hình hóa), NL3 (Giải quyết vấn đề), NL4 (Giao tiếp toán học), NL5 (Sử dụng công cụ, phương tiện học toán).</em></p>
+
+        <!-- ==================== PHẦN 3: ĐỀ KIỂM TRA ĐỊNH KÌ ==================== -->
+        <div style="page-break-before: always;"></div>
+        <h3 style="text-align: left;">PHẦN 3: ĐỀ KIỂM TRA ĐỊNH KÌ MINH HỌA (CẤU TRÚC 4 PHẦN CHUẨN CÔNG VĂN 7991/BGDĐT-GDTrH)</h3>
+        <p><strong>Trường:</strong> TRƯỜNG TH, THCS NGUYỄN HỮU CẢNH &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Mã đề thi: ${examCode}</strong></p>
+        <p><strong>Thời gian làm bài:</strong> ${duration} phút (không kể thời gian giao đề)</p>
 
         <h4>PHẦN I. CÂU TRẮC NGHIỆM NHIỀU PHƯƠNG ÁN LỰA CHỌN (3,0 điểm)</h4>
         <p><em>Thí sinh trả lời từ câu 1 đến câu 12. Mỗi câu hỏi thí sinh chỉ chọn một phương án đúng nhất. (Mỗi câu trả lời đúng được 0,25 điểm).</em></p>
-        <p><strong>Câu 1:</strong> Điều kiện xác định của biểu thức $\\sqrt{2x - 6}$ là:<br/>A. $x \\ge 3$ &nbsp;&nbsp;&nbsp;&nbsp; B. $x > 3$ &nbsp;&nbsp;&nbsp;&nbsp; C. $x \\le 3$ &nbsp;&nbsp;&nbsp;&nbsp; D. $x < 3$</p>
-        <p><strong>Câu 2:</strong> Giá trị của biểu thức $\\sqrt{(\\sqrt{3} - 2)^2} + \\sqrt{3}$ bằng:<br/>A. $2\\sqrt{3} - 2$ &nbsp;&nbsp;&nbsp;&nbsp; B. 2 &nbsp;&nbsp;&nbsp;&nbsp; C. $-2$ &nbsp;&nbsp;&nbsp;&nbsp; D. $2 - 2\\sqrt{3}$</p>
-        <p><strong>Câu 3:</strong> Cặp số $(x; y) = (2; 1)$ là nghiệm của hệ phương trình nào sau đây?<br/>A. $\\begin{cases} x + y = 3 \\\\ 2x - y = 3 \\end{cases}$ &nbsp;&nbsp;&nbsp;&nbsp; B. $\\begin{cases} x - y = 1 \\\\ x + 2y = 5 \\end{cases}$ &nbsp;&nbsp;&nbsp;&nbsp; C. $\\begin{cases} 2x + y = 4 \\\\ x - y = 2 \\end{cases}$ &nbsp;&nbsp;&nbsp;&nbsp; D. $\\begin{cases} 3x - y = 2 \\\\ x + y = 4 \\end{cases}$</p>
-        <p><strong>Câu 4:</strong> Cho phương trình bậc hai $x^2 - 7x + 10 = 0$. Tích hai nghiệm $x_1 \\cdot x_2$ là:<br/>A. 7 &nbsp;&nbsp;&nbsp;&nbsp; B. $-7$ &nbsp;&nbsp;&nbsp;&nbsp; C. 10 &nbsp;&nbsp;&nbsp;&nbsp; D. $-10$</p>
-        <p><strong>Câu 5:</strong> Cho tam giác ABC vuông tại A có $AB = 6\\text{ cm}$, $AC = 8\\text{ cm}$. Bán kính đường tròn ngoại tiếp tam giác ABC là:<br/>A. $5\\text{ cm}$ &nbsp;&nbsp;&nbsp;&nbsp; B. $10\\text{ cm}$ &nbsp;&nbsp;&nbsp;&nbsp; C. $4\\text{ cm}$ &nbsp;&nbsp;&nbsp;&nbsp; D. $7\\text{ cm}$</p>
-        <p><strong>Câu 6:</strong> Biểu thức $\\sin^2 35^\\circ + \\sin^2 55^\\circ$ có giá trị bằng:<br/>A. 0 &nbsp;&nbsp;&nbsp;&nbsp; B. 1 &nbsp;&nbsp;&nbsp;&nbsp; C. 2 &nbsp;&nbsp;&nbsp;&nbsp; D. 0,5</p>
-        <p><strong>Câu 7:</strong> Một cột cờ có bóng trên mặt đất dài $12\\text{ m}$, tia nắng mặt trời tạo với mặt đất góc $35^\\circ$. Chiều cao cột cờ xấp xỉ bằng:<br/>A. $8,4\\text{ m}$ &nbsp;&nbsp;&nbsp;&nbsp; B. $17,1\\text{ m}$ &nbsp;&nbsp;&nbsp;&nbsp; C. $9,8\\text{ m}$ &nbsp;&nbsp;&nbsp;&nbsp; D. $7,2\\text{ m}$</p>
-        <p><strong>Câu 8:</strong> Cho đường tròn $(O; 5\\text{ cm})$ và dây $AB = 8\\text{ cm}$. Khoảng cách từ tâm O đến dây AB là:<br/>A. $3\\text{ cm}$ &nbsp;&nbsp;&nbsp;&nbsp; B. $4\\text{ cm}$ &nbsp;&nbsp;&nbsp;&nbsp; C. $2\\text{ cm}$ &nbsp;&nbsp;&nbsp;&nbsp; D. $1\\text{ cm}$</p>
-        <p><strong>Câu 9:</strong> Thể tích hình trụ có bán kính đáy $r = 3\\text{ cm}$ và chiều cao $h = 5\\text{ cm}$ là:<br/>A. $15\\pi\\text{ cm}^3$ &nbsp;&nbsp;&nbsp;&nbsp; B. $45\\pi\\text{ cm}^3$ &nbsp;&nbsp;&nbsp;&nbsp; C. $30\\pi\\text{ cm}^3$ &nbsp;&nbsp;&nbsp;&nbsp; D. $90\\pi\\text{ cm}^3$</p>
-        <p><strong>Câu 10:</strong> Góc nội tiếp chắn nửa đường tròn có số đo là:<br/>A. $60^\\circ$ &nbsp;&nbsp;&nbsp;&nbsp; B. $90^\\circ$ &nbsp;&nbsp;&nbsp;&nbsp; C. $180^\\circ$ &nbsp;&nbsp;&nbsp;&nbsp; D. $45^\\circ$</p>
-        <p><strong>Câu 11:</strong> Số nghiệm của phương trình $2x^2 + 5x + 7 = 0$ là:<br/>A. 0 (Vô nghiệm) &nbsp;&nbsp;&nbsp;&nbsp; B. 1 &nbsp;&nbsp;&nbsp;&nbsp; C. 2 &nbsp;&nbsp;&nbsp;&nbsp; D. Vô số</p>
-        <p><strong>Câu 12:</strong> Điều kiện để tứ giác ABCD nội tiếp được đường tròn là:<br/>A. $\\widehat{A} + \\widehat{C} = 180^\\circ$ &nbsp;&nbsp;&nbsp;&nbsp; B. $\\widehat{A} + \\widehat{B} = 180^\\circ$ &nbsp;&nbsp;&nbsp;&nbsp; C. $\\widehat{B} + \\widehat{C} = 180^\\circ$ &nbsp;&nbsp;&nbsp;&nbsp; D. $\\widehat{A} = \\widehat{C}$</p>
+        <p><strong>Câu 1:</strong> Điều kiện xác định của biểu thức √(2x - 6) là:<br/>A. x ≥ 3 &nbsp;&nbsp;&nbsp;&nbsp; B. x &gt; 3 &nbsp;&nbsp;&nbsp;&nbsp; C. x ≤ 3 &nbsp;&nbsp;&nbsp;&nbsp; D. x &lt; 3</p>
+        <p><strong>Câu 2:</strong> Giá trị của biểu thức √((√3 - 2)²) + √3 bằng:<br/>A. 2√3 - 2 &nbsp;&nbsp;&nbsp;&nbsp; B. 2 &nbsp;&nbsp;&nbsp;&nbsp; C. -2 &nbsp;&nbsp;&nbsp;&nbsp; D. 2 - 2√3</p>
+        <p><strong>Câu 3:</strong> Cặp số (x; y) = (2; 1) là nghiệm của hệ phương trình nào sau đây?<br/>A. { x + y = 3; 2x - y = 3 } &nbsp;&nbsp;&nbsp;&nbsp; B. { x - y = 1; x + 2y = 5 } &nbsp;&nbsp;&nbsp;&nbsp; C. { 2x + y = 4; x - y = 2 } &nbsp;&nbsp;&nbsp;&nbsp; D. { 3x - y = 2; x + y = 4 }</p>
+        <p><strong>Câu 4:</strong> Cho phương trình bậc hai x² - 7x + 10 = 0. Tích hai nghiệm x₁ · x₂ là:<br/>A. 7 &nbsp;&nbsp;&nbsp;&nbsp; B. -7 &nbsp;&nbsp;&nbsp;&nbsp; C. 10 &nbsp;&nbsp;&nbsp;&nbsp; D. -10</p>
+        <p><strong>Câu 5:</strong> Cho tam giác ABC vuông tại A có AB = 6 cm, AC = 8 cm. Bán kính đường tròn ngoại tiếp tam giác ABC là:<br/>A. 5 cm &nbsp;&nbsp;&nbsp;&nbsp; B. 10 cm &nbsp;&nbsp;&nbsp;&nbsp; C. 4 cm &nbsp;&nbsp;&nbsp;&nbsp; D. 7 cm</p>
+        <p><strong>Câu 6:</strong> Biểu thức sin² 35° + sin² 55° có giá trị bằng:<br/>A. 0 &nbsp;&nbsp;&nbsp;&nbsp; B. 1 &nbsp;&nbsp;&nbsp;&nbsp; C. 2 &nbsp;&nbsp;&nbsp;&nbsp; D. 0,5</p>
+        <p><strong>Câu 7:</strong> Một cột cờ có bóng trên mặt đất dài 12 m, tia nắng mặt trời tạo với mặt đất góc 35°. Chiều cao cột cờ xấp xỉ bằng:<br/>A. 8,4 m &nbsp;&nbsp;&nbsp;&nbsp; B. 17,1 m &nbsp;&nbsp;&nbsp;&nbsp; C. 9,8 m &nbsp;&nbsp;&nbsp;&nbsp; D. 7,2 m</p>
+        <p><strong>Câu 8:</strong> Cho đường tròn (O; 5 cm) và dây AB = 8 cm. Khoảng cách từ tâm O đến dây AB là:<br/>A. 3 cm &nbsp;&nbsp;&nbsp;&nbsp; B. 4 cm &nbsp;&nbsp;&nbsp;&nbsp; C. 2 cm &nbsp;&nbsp;&nbsp;&nbsp; D. 1 cm</p>
+        <p><strong>Câu 9:</strong> Thể tích hình trụ có bán kính đáy r = 3 cm và chiều cao h = 5 cm là:<br/>A. 15π cm³ &nbsp;&nbsp;&nbsp;&nbsp; B. 45π cm³ &nbsp;&nbsp;&nbsp;&nbsp; C. 30π cm³ &nbsp;&nbsp;&nbsp;&nbsp; D. 90π cm³</p>
+        <p><strong>Câu 10:</strong> Góc nội tiếp chắn nửa đường tròn có số đo là:<br/>A. 60° &nbsp;&nbsp;&nbsp;&nbsp; B. 90° &nbsp;&nbsp;&nbsp;&nbsp; C. 180° &nbsp;&nbsp;&nbsp;&nbsp; D. 45°</p>
+        <p><strong>Câu 11:</strong> Số nghiệm của phương trình 2x² + 5x + 7 = 0 là:<br/>A. 0 (Vô nghiệm) &nbsp;&nbsp;&nbsp;&nbsp; B. 1 &nbsp;&nbsp;&nbsp;&nbsp; C. 2 &nbsp;&nbsp;&nbsp;&nbsp; D. Vô số</p>
+        <p><strong>Câu 12:</strong> Điều kiện để tứ giác ABCD nội tiếp được đường tròn là:<br/>A. ∠A + ∠C = 180° &nbsp;&nbsp;&nbsp;&nbsp; B. ∠A + ∠B = 180° &nbsp;&nbsp;&nbsp;&nbsp; C. ∠B + ∠C = 180° &nbsp;&nbsp;&nbsp;&nbsp; D. ∠A = ∠C</p>
 
         <h4>PHẦN II. CÂU TRẮC NGHIỆM ĐÚNG - SAI (2,0 điểm)</h4>
         <p><em>Thí sinh trả lời câu 1 và câu 2. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn Đúng hoặc Sai.</em><br/>
-        <em>Barem điểm theo CV 7991: Đúng 1 ý: 0,1đ; Đúng 2 ý: 0,25đ; Đúng 3 ý: 0,5đ; Đúng 4 ý: 1,0đ.</em></p>
-        <p><strong>Câu 1:</strong> Cho biểu thức $P = \\left(\\dfrac{\\sqrt{x}}{\\sqrt{x} - 1} - \\dfrac{1}{x - \\sqrt{x}}\\right) : \\left(\\dfrac{1}{\\sqrt{x} + 1} + \\dfrac{2}{x - 1}\\right)$ với $x > 0, x \\neq 1$.<br/>
-        a) Điều kiện xác định của biểu thức P là $x > 0$ và $x \\neq 1$.<br/>
-        b) Biểu thức $\\dfrac{\\sqrt{x}}{\\sqrt{x} - 1} - \\dfrac{1}{x - \\sqrt{x}} = \\dfrac{\\sqrt{x} + 1}{\\sqrt{x}}$.<br/>
-        c) Kết quả rút gọn của P là $P = \\sqrt{x} - 1$.<br/>
-        d) Giá trị của x để $P = 2$ là $x = 9$.</p>
+        <em>Barem điểm theo CV 7991: Đúng 1 ý: 0,10 điểm; Đúng 2 ý: 0,25 điểm; Đúng 3 ý: 0,50 điểm; Đúng cả 4 ý: 1,00 điểm.</em></p>
+        <p><strong>Câu 1:</strong> Cho biểu thức P = [ √x / (√x - 1) - 1 / (x - √x) ] : [ 1 / (√x + 1) + 2 / (x - 1) ] với x &gt; 0, x ≠ 1.<br/>
+        a) Điều kiện xác định của biểu thức P là x &gt; 0 và x ≠ 1.<br/>
+        b) Biểu thức √x / (√x - 1) - 1 / (x - √x) = (√x + 1) / √x.<br/>
+        c) Kết quả rút gọn của P là P = √x - 1.<br/>
+        d) Giá trị của x để P = 2 là x = 9.</p>
 
-        <p><strong>Câu 2:</strong> Cho hệ phương trình $\\begin{cases} 2x + y = 5 \\\\ x - 3y = -1 \\end{cases}$<br/>
-        a) Hệ phương trình có nghiệm duy nhất vì $\\dfrac{2}{1} \\neq \\dfrac{1}{-3}$.<br/>
-        b) Khi cộng đại số ta được phương trình bậc nhất $7x = 14$.<br/>
-        c) Nghiệm duy nhất của hệ phương trình là $(x; y) = (2; 1)$.<br/>
-        d) Giá trị biểu thức $T = x^2 + y^2$ tại nghiệm của hệ là $T = 5$.</p>
+        <p><strong>Câu 2:</strong> Cho hệ phương trình { 2x + y = 5; x - 3y = -1 }<br/>
+        a) Hệ phương trình có nghiệm duy nhất vì 2/1 ≠ 1/(-3).<br/>
+        b) Khi cộng đại số ta được phương trình bậc nhất 7x = 14.<br/>
+        c) Nghiệm duy nhất của hệ phương trình là (x; y) = (2; 1).<br/>
+        d) Giá trị biểu thức T = x² + y² tại nghiệm của hệ là T = 5.</p>
 
         <h4>PHẦN III. CÂU TRẮC NGHIỆM TRẢ LỜI NGẮN (2,0 điểm)</h4>
         <p><em>Thí sinh trả lời từ câu 1 đến câu 4. Mỗi câu trả lời đúng được 0,5 điểm.</em></p>
-        <p><strong>Câu 1:</strong> Tính giá trị biểu thức $M = \\sqrt{48} - 2\\sqrt{27} + \\sqrt{75}$ dưới dạng $a\\sqrt{3}$. Tìm giá trị của số nguyên a.</p>
-        <p><strong>Câu 2:</strong> Tìm giá trị tham số m để phương trình $x^2 - 4x + m = 0$ có nghiệm kép.</p>
-        <p><strong>Câu 3:</strong> Một người quan sát đứng trên đỉnh hải đăng cao $50\\text{ m}$ nhìn thấy một con thuyền ở xa với góc hạ $22^\\circ$. Khoảng cách từ chân hải đăng đến con thuyền bằng bao nhiêu mét? (Làm tròn kết quả đến hàng đơn vị).</p>
-        <p><strong>Câu 4:</strong> Cho tam giác ABC vuông tại A có đường cao AH. Biết $BH = 4\\text{ cm}, CH = 9\\text{ cm}$. Tính độ dài đường cao AH (đơn vị: cm).</p>
+        <p><strong>Câu 1:</strong> Tính giá trị biểu thức M = √48 - 2√27 + √75 dưới dạng a√3. Tìm giá trị của số nguyên a.</p>
+        <p><strong>Câu 2:</strong> Tìm giá trị tham số m để phương trình x² - 4x + m = 0 có nghiệm kép.</p>
+        <p><strong>Câu 3:</strong> Một người quan sát đứng trên đỉnh hải đăng cao 50 m nhìn thấy một con thuyền ở xa với góc hạ 22°. Khoảng cách từ chân hải đăng đến con thuyền bằng bao nhiêu mét? (Làm tròn kết quả đến hàng đơn vị).</p>
+        <p><strong>Câu 4:</strong> Cho tam giác ABC vuông tại A có đường cao AH. Biết BH = 4 cm, CH = 9 cm. Tính độ dài đường cao AH (đơn vị: cm).</p>
 
         <h4>PHẦN IV. TỰ LUẬN (3,0 điểm)</h4>
         <p><strong>Bài 1 (1,0 điểm):</strong> Giải bài toán bằng cách lập hệ phương trình:<br/>
-        Hai đội công nhân cùng làm chung một đoạn đường thì sau 12 ngày sẽ hoàn thành. Nếu đội thứ nhất làm một mình trong 4 ngày rồi đội thứ hai làm tiếp trong 10 ngày thì cả hai đội hoàn thành được $\\dfrac{7}{12}$ đoạn đường. Hỏi nếu mỗi đội làm một mình thì sau bao nhiêu ngày sẽ hoàn thành toàn bộ đoạn đường?</p>
+        Hai đội công nhân cùng làm chung một đoạn đường thì sau 12 ngày sẽ hoàn thành. Nếu đội thứ nhất làm một mình trong 4 ngày rồi đội thứ hai làm tiếp trong 10 ngày thì cả hai đội hoàn thành được 7/12 đoạn đường. Hỏi nếu mỗi đội làm một mình thì sau bao nhiêu ngày sẽ hoàn thành toàn bộ đoạn đường?</p>
 
         <p><strong>Bài 2 (1,5 điểm):</strong> Cho nửa đường tròn tâm O đường kính AB. Lấy điểm C trên nửa đường tròn (C khác A và B). Kẻ tiếp tuyến Ax, By với nửa đường tròn. Tiếp tuyến tại C cắt Ax và By lần lượt tại M và N.<br/>
-        a) Chứng minh tứ giác AMCO nội tiếp và $\\widehat{MON} = 90^\\circ$.<br/>
-        b) Chứng minh $MN = AM + BN$ và tích $AM \\cdot BN$ không phụ thuộc vào vị trí điểm C.<br/>
+        a) Chứng minh tứ giác AMCO nội tiếp và ∠MON = 90°.<br/>
+        b) Chứng minh MN = AM + BN và tích AM · BN không phụ thuộc vào vị trí điểm C.<br/>
         c) Gọi K là giao điểm của AN và BM. Đường thẳng qua K song song với Ax cắt AB tại H. Chứng minh K là trung điểm của CH.</p>
 
-        <p><strong>Bài 3 (0,5 điểm):</strong> Cho $x, y > 0$ thỏa mãn $x + y = 2$. Tìm giá trị nhỏ nhất của biểu thức $Q = \\dfrac{1}{x} + \\dfrac{1}{y} + 4xy$.</p>
+        <p><strong>Bài 3 (0,5 điểm):</strong> Cho x, y &gt; 0 thỏa mãn x + y = 2. Tìm giá trị nhỏ nhất của biểu thức Q = 1/x + 1/y + 4xy.</p>
 
+        <!-- ==================== PHẦN 4: HƯỚNG DẪN CHẤM & BIỂU ĐIỂM ==================== -->
         <div style="page-break-before: always;"></div>
-        <h3>PHẦN 3: HƯỚNG DẪN CHẤM VÀ BIỂU ĐIỂM THEO CÔNG VĂN 7991</h3>
+        <h3 style="text-align: left;">PHẦN 4: HƯỚNG DẪN CHẤM VÀ BIỂU ĐIỂM CHI TIẾT (THEO CÔNG VĂN 7991/BGDĐT-GDTrH)</h3>
+        
         <p><strong>PHẦN I (12 câu x 0,25đ = 3,0 điểm):</strong></p>
         <table style="width: 100%;">
-          <tr><th>Câu 1</th><th>Câu 2</th><th>Câu 3</th><th>Câu 4</th><th>Câu 5</th><th>Câu 6</th><th>Câu 7</th><th>Câu 8</th><th>Câu 9</th><th>Câu 10</th><th>Câu 11</th><th>Câu 12</th></tr>
+          <tr style="background-color: #f2f2f2;"><th>Câu 1</th><th>Câu 2</th><th>Câu 3</th><th>Câu 4</th><th>Câu 5</th><th>Câu 6</th><th>Câu 7</th><th>Câu 8</th><th>Câu 9</th><th>Câu 10</th><th>Câu 11</th><th>Câu 12</th></tr>
           <tr class="bold" style="color: blue;"><td>A</td><td>B</td><td>A</td><td>C</td><td>A</td><td>B</td><td>A</td><td>A</td><td>B</td><td>B</td><td>A</td><td>A</td></tr>
         </table>
 
         <p><strong>PHẦN II (2 câu lớn = 2,0 điểm - Barem chuẩn CV 7991):</strong></p>
         <table>
-          <tr><th>Câu</th><th>Ý a</th><th>Ý b</th><th>Ý c</th><th>Ý d</th><th>Thang điểm tính theo số ý đúng</th></tr>
+          <tr style="background-color: #f2f2f2;"><th>Câu</th><th>Ý a</th><th>Ý b</th><th>Ý c</th><th>Ý d</th><th>Thang điểm tính theo số ý đúng</th></tr>
           <tr><td>Câu 1</td><td>Đúng</td><td>Đúng</td><td>Đúng</td><td>Đúng</td><td rowspan="2" class="left">
             - Đúng 1 ý: <strong>0,10 điểm</strong><br/>
             - Đúng 2 ý: <strong>0,25 điểm</strong><br/>
@@ -398,28 +509,84 @@ export const MatrixSpecGenerator: React.FC = () => {
 
         <p><strong>PHẦN III (4 câu x 0,5đ = 2,0 điểm):</strong></p>
         <table>
-          <tr><th>Câu 1</th><th>Câu 2</th><th>Câu 3</th><th>Câu 4</th></tr>
+          <tr style="background-color: #f2f2f2;"><th>Câu 1</th><th>Câu 2</th><th>Câu 3</th><th>Câu 4</th></tr>
           <tr class="bold" style="color: blue;"><td>a = 3</td><td>m = 4</td><td>124 (mét)</td><td>AH = 6 (cm)</td></tr>
         </table>
 
-        <p><strong>PHẦN IV. TỰ LUẬN (3,0 điểm - Chấm từng bước 0,25đ):</strong></p>
-        <p class="bold">Bài 1 (1,0đ):</p>
-        <p>+ Gọi thời gian đội 1 và đội 2 làm một mình xong việc lần lượt là x và y (ngày, $x, y > 12$) (0,25đ)<br/>
-        + Trong 1 ngày: Đội 1 làm $\\dfrac{1}{x}$, đội 2 làm $\\dfrac{1}{y}$. PT 1: $\\dfrac{1}{x} + \\dfrac{1}{y} = \\dfrac{1}{12}$ (0,25đ)<br/>
-        + Theo đề bài, đội 1 làm 4 ngày, đội 2 làm 10 ngày được $\\dfrac{7}{12}$ công việc: $\\dfrac{4}{x} + \\dfrac{10}{y} = \\dfrac{7}{12}$ (0,25đ)<br/>
-        + Giải hệ phương trình ta được $x = 28$ (thỏa mãn) và $y = 21$ (thỏa mãn). Kết luận: Đội 1: 28 ngày, Đội 2: 21 ngày (0,25đ).</p>
+        <p><strong>PHẦN IV. TỰ LUẬN (3,0 điểm):</strong></p>
+        <table style="width: 100%;">
+          <thead>
+            <tr style="background-color: #f2f2f2;">
+              <th style="width: 14%;">Câu</th>
+              <th style="width: 72%; text-align: left;">Hướng dẫn chi tiết</th>
+              <th style="width: 14%;">Biểu điểm</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="4" class="bold">Bài 1<br/>(1,0 điểm)</td>
+              <td class="left">Gọi thời gian đội 1 và đội 2 làm một mình xong việc lần lượt là x và y (ngày, điều kiện: x, y &gt; 12).</td>
+              <td class="bold">0,25đ</td>
+            </tr>
+            <tr>
+              <td class="left">Trong 1 ngày: Đội 1 làm 1/x (đoạn đường), đội 2 làm 1/y (đoạn đường). Do hai đội làm chung 12 ngày xong nên ta có phương trình: 1/x + 1/y = 1/12 (1)</td>
+              <td class="bold">0,25đ</td>
+            </tr>
+            <tr>
+              <td class="left">Đội 1 làm 4 ngày được 4/x, đội 2 làm 10 ngày được 10/y, cả hai hoàn thành 7/12: 4/x + 10/y = 7/12 (2)</td>
+              <td class="bold">0,25đ</td>
+            </tr>
+            <tr>
+              <td class="left">Từ (1) và (2), giải hệ phương trình đặt ẩn phụ 1/x = u, 1/y = v tìm được x = 28 (thỏa mãn) và y = 21 (thỏa mãn). Kết luận: Đội 1 làm một mình hết 28 ngày, Đội 2 làm một mình hết 21 ngày.</td>
+              <td class="bold">0,25đ</td>
+            </tr>
 
-        <p class="bold">Bài 2 (1,5đ):</p>
-        <p>+ a) Tứ giác AMCO có $\\widehat{MAO} = \\widehat{MCO} = 90^\\circ \\implies$ AMCO nội tiếp. $OM$ là phân giác $\\widehat{AOC}$, $ON$ là phân giác $\\widehat{BOC} \\implies \\widehat{MON} = 90^\\circ$ (0,50đ)<br/>
-        + b) Theo tính chất tiếp tuyến cắt nhau: $MA = MC$ và $NB = NC \\implies MN = MC + NC = MA + NB$. Tam giác MON vuông tại O đường cao OC $\\implies AM \\cdot BN = MC \\cdot NC = OC^2 = R^2$ không đổi (0,50đ)<br/>
-        + c) Áp dụng định lí Ta-let và tỉ số đồng dạng chứng minh $KH = KC \\implies$ K là trung điểm CH (0,50đ).</p>
+            <tr>
+              <td rowspan="3" class="bold">Bài 2<br/>(1,5 điểm)</td>
+              <td class="left"><strong>a) (0,50 điểm):</strong><br/>
+              - Tứ giác AMCO có ∠MAO = ∠MCO = 90° =&gt; AMCO nội tiếp đường tròn.<br/>
+              - Theo tính chất tiếp tuyến cắt nhau, OM là phân giác ∠AOC, ON là phân giác ∠BOC =&gt; ∠MON = 90°.</td>
+              <td class="bold">0,50đ</td>
+            </tr>
+            <tr>
+              <td class="left"><strong>b) (0,50 điểm):</strong><br/>
+              - Theo tính chất tiếp tuyến cắt nhau: MA = MC và NB = NC =&gt; MN = MC + NC = MA + NB.<br/>
+              - Tam giác MON vuông tại O có đường cao OC =&gt; AM · BN = MC · NC = OC² = R² không đổi khi C di chuyển.</td>
+              <td class="bold">0,50đ</td>
+            </tr>
+            <tr>
+              <td class="left"><strong>c) (0,50 điểm):</strong><br/>
+              - Áp dụng định lí Ta-lét trong tam giác ANB và AMB có KH // Ax // By, chứng minh KH / Ax = NB / AB và KC / Ax = ... =&gt; KH = KC.<br/>
+              - Mà K, C, H thẳng hàng nên K là trung điểm CH.</td>
+              <td class="bold">0,50đ</td>
+            </tr>
 
-        <p class="bold">Bài 3 (0,5đ):</p>
-        <p>+ Biến đổi $Q = \\left(\\dfrac{1}{x} + \\dfrac{1}{y}\\right) + 4xy = \\dfrac{x + y}{xy} + 4xy = \\dfrac{2}{xy} + 4xy$ (0,25đ)<br/>
-        + Tách $Q = \\left(4xy + \\dfrac{1}{4xy}\\right) + \\dfrac{7}{4xy} \\ge 2\\sqrt{4xy \\cdot \\dfrac{1}{4xy}} + \\dfrac{7}{4 \\cdot \\left(\\dfrac{x + y}{2}\\right)^2} = 2 + 7 = 9$. Dấu bằng xảy ra khi $x = y = 1$. Vậy $\\min Q = 9$ (0,25đ).</p>
+            <tr>
+              <td rowspan="2" class="bold">Bài 3<br/>(0,5 điểm)</td>
+              <td class="left">Biến đổi Q = (1/x + 1/y) + 4xy = (x + y)/(xy) + 4xy = 2/(xy) + 4xy. Với x + y = 2 =&gt; xy ≤ ((x+y)/2)² = 1.</td>
+              <td class="bold">0,25đ</td>
+            </tr>
+            <tr>
+              <td class="left">Tách: Q = (4xy + 1/(4xy)) + 7/(4xy) ≥ 2√(4xy · 1/(4xy)) + 7 / [4 · ((x + y)/2)²] = 2 + 7 = 9. Dấu đẳng thức xảy ra khi x = y = 1. Kết luận: Giá trị nhỏ nhất của Q là 9 khi x = y = 1.</td>
+              <td class="bold">0,25đ</td>
+            </tr>
+          </tbody>
+        </table>
 
         <br/>
-        <p style="text-align: right;"><strong>BAN BIÊN SOẠN CHUYÊN MÔN TOÁN 9</strong><br/><em>Teacher Lê Thanh Tùng</em></p>
+        <table style="border: none; width: 100%; margin-top: 30px;">
+          <tr style="border: none;">
+            <td style="border: none; width: 50%; text-align: center; vertical-align: top;">
+              <strong>TỔ TRƯỞNG CHUYÊN MÔN</strong><br/>
+              <em>(Ký và ghi rõ họ tên)</em><br/><br/><br/><br/>
+            </td>
+            <td style="border: none; width: 50%; text-align: center; vertical-align: top;">
+              <strong>GIÁO VIÊN BIÊN SOẠN</strong><br/>
+              <em>(Ký và ghi rõ họ tên)</em><br/><br/><br/>
+              <strong>Teacher Lê Thanh Tùng</strong>
+            </td>
+          </tr>
+        </table>
       </body>
       </html>
     `;
@@ -428,7 +595,7 @@ export const MatrixSpecGenerator: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Ma-tran-ban-dac-ta-CV7991-Toan-9-Ma-${examCode}.doc`;
+    a.download = `Bo-de-CV7991-Toan-9-Ma-${examCode}.doc`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -793,21 +960,109 @@ export const MatrixSpecGenerator: React.FC = () => {
                       <div><strong className="text-amber-600">Vận dụng:</strong> {item.reqVanDung}</div>
                     </td>
 
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.mcBiet || '-'}</td>
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.mcHieu || '-'}</td>
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.mcVanDung || '-'}</td>
+                    {/* MC Nhiều lựa chọn */}
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.mcBiet ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">{item.mcBiet} câu</span>
+                          {item.mcBietComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.mcBietComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.mcHieu ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">{item.mcHieu} câu</span>
+                          {item.mcHieuComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.mcHieuComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.mcVanDung ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">{item.mcVanDung} câu</span>
+                          {item.mcVanDungComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.mcVanDungComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
 
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.tfBiet ? '(1c) 4 ý' : '-'}</td>
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.tfHieu ? '(1c) 4 ý' : '-'}</td>
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.tfVanDung || '-'}</td>
+                    {/* TF Đúng - Sai */}
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.tfBiet ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">(1c) 4 ý</span>
+                          {item.tfBietComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.tfBietComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.tfHieu ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">(1c) 4 ý</span>
+                          {item.tfHieuComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.tfHieuComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.tfVanDung ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">(1c) 4 ý</span>
+                          {item.tfVanDungComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.tfVanDungComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
 
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.saBiet || '-'}</td>
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.saHieu || '-'}</td>
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.saVanDung || '-'}</td>
+                    {/* SA Trả lời ngắn */}
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.saBiet ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">{item.saBiet} câu</span>
+                          {item.saBietComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.saBietComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.saHieu ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">{item.saHieu} câu</span>
+                          {item.saHieuComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.saHieuComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.saVanDung ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">{item.saVanDung} câu</span>
+                          {item.saVanDungComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.saVanDungComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
 
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.tlBiet || '-'}</td>
-                    <td className="p-1 text-center border-r border-slate-200 dark:border-slate-800">{item.tlHieu || '-'}</td>
-                    <td className="p-1 text-center border-slate-200 dark:border-slate-800">{item.tlVanDung || '-'}</td>
+                    {/* TL Tự luận */}
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.tlBiet ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-slate-800 dark:text-slate-100">1 bài</span>
+                          {item.tlBietComp && <span className="text-[9.5px] leading-tight font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 rounded px-1 py-0.5 mt-0.5 border border-purple-200 dark:border-purple-900/60">({item.tlBietComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-r border-slate-200 dark:border-slate-800">
+                      {item.tlHieu ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-purple-700 dark:text-purple-300">{item.tlHieuLabel || '1 bài (1,0đ)'}</span>
+                          {item.tlHieuComp && <span className="text-[9.5px] leading-tight font-semibold text-purple-800 dark:text-purple-200 bg-purple-100 dark:bg-purple-950 rounded px-1 py-0.5 mt-0.5 border border-purple-300 dark:border-purple-800">({item.tlHieuComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
+                    <td className="p-1.5 text-center border-slate-200 dark:border-slate-800">
+                      {item.tlVanDung ? (
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold text-purple-700 dark:text-purple-300">{item.tlVanDungLabel || '1 bài'}</span>
+                          {item.tlVanDungComp && <span className="text-[9.5px] leading-tight font-semibold text-purple-800 dark:text-purple-200 bg-purple-100 dark:bg-purple-950 rounded px-1 py-0.5 mt-0.5 border border-purple-300 dark:border-purple-800">({item.tlVanDungComp})</span>}
+                        </div>
+                      ) : <span className="text-slate-400">-</span>}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -1133,80 +1388,141 @@ export const MatrixSpecGenerator: React.FC = () => {
             </div>
           </div>
 
-          {/* Phần IV Barem Tự luận từng bước */}
-          <div className="space-y-4">
+          {/* Phần IV Barem Tự luận dạng bảng 3 cột chuẩn CV 7991 */}
+          <div className="space-y-3">
             <h3 className="font-bold text-xs uppercase text-slate-500 tracking-wider">
-              Hướng dẫn chấm chi tiết Phần IV. Tự luận (3,0 điểm)
+              Hướng dẫn chấm và biểu điểm chi tiết Phần IV. Tự luận (3,0 điểm)
             </h3>
 
-            <div className="space-y-3 text-xs">
-              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
-                <div className="flex items-center justify-between font-bold text-purple-700 dark:text-purple-300">
-                  <span>Bài 1 (1,0 điểm): Lập hệ phương trình</span>
-                  <span>1,0đ</span>
-                </div>
-                <div className="space-y-1.5 text-slate-600 dark:text-slate-400 pl-2">
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
-                    <span>+ Gọi x, y (ngày) là thời gian đội 1 và đội 2 làm một mình xong việc (x, y &gt; 12)</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,25đ</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
-                    <span>+ Trong 1 ngày: Đội 1 làm 1/x, đội 2 làm 1/y đoạn đường. Phương trình (1): 1/x + 1/y = 1/12</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,25đ</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
-                    <span>+ Đội 1 làm 4 ngày, đội 2 làm 10 ngày được 7/12 đoạn đường: 4/x + 10/y = 7/12</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,25đ</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>+ Giải hệ phương trình tìm được x = 28 (TM) và y = 21 (TM). Kết luận chính xác.</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,25đ</span>
-                  </div>
-                </div>
-              </div>
+            <div className="overflow-x-auto border border-slate-300 dark:border-slate-700 rounded-2xl shadow-xs">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold border-b border-slate-300 dark:border-slate-700">
+                    <th className="p-3 border-r border-slate-300 dark:border-slate-700 text-center w-28 shrink-0">Câu</th>
+                    <th className="p-3 border-r border-slate-300 dark:border-slate-700 text-left">Hướng dẫn chi tiết</th>
+                    <th className="p-3 border-slate-300 dark:border-slate-700 text-center w-24 shrink-0">Biểu điểm</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                  {/* Bài 1 */}
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td rowSpan={4} className="p-3 border-r border-slate-200 dark:border-slate-800 font-bold text-center text-purple-700 dark:text-purple-300 bg-purple-50/30 dark:bg-purple-950/20 align-top">
+                      Bài 1<br/>
+                      <span className="text-[11px] font-normal text-slate-500">(1,0 điểm)</span>
+                    </td>
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      Gọi thời gian đội 1 và đội 2 làm một mình xong việc lần lượt là <span className="font-semibold text-purple-600">x</span> và <span className="font-semibold text-purple-600">y</span> (ngày, điều kiện: x, y &gt; 12).
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,25đ
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      Trong 1 ngày: Đội 1 làm 1/x (đoạn đường), đội 2 làm 1/y (đoạn đường). Do hai đội cùng làm 12 ngày hoàn thành đoạn đường nên ta có phương trình: <strong>1/x + 1/y = 1/12</strong> (1).
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,25đ
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      Đội 1 làm 4 ngày được 4/x, đội 2 làm 10 ngày được 10/y, cả hai hoàn thành 7/12 đoạn đường nên ta có phương trình: <strong>4/x + 10/y = 7/12</strong> (2).
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,25đ
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      Từ (1) và (2), giải hệ phương trình (đặt u = 1/x, v = 1/y) tìm được: <strong>x = 28</strong> (thỏa mãn) và <strong>y = 21</strong> (thỏa mãn).<br/>
+                      <strong>Kết luận:</strong> Nếu làm một mình thì đội 1 hoàn thành trong 28 ngày, đội 2 hoàn thành trong 21 ngày.
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,25đ
+                    </td>
+                  </tr>
 
-              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
-                <div className="flex items-center justify-between font-bold text-purple-700 dark:text-purple-300">
-                  <span>Bài 2 (1,5 điểm): Hình học tiếp tuyến và tứ giác nội tiếp</span>
-                  <span>1,5đ</span>
-                </div>
-                <div className="space-y-1.5 text-slate-600 dark:text-slate-400 pl-2">
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
-                    <span>+ a) Chỉ ra góc MAO = góc MCO = 90° ⇒ AMCO nội tiếp. OM, ON là tia phân giác ⇒ góc MON = 90°</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,50đ</span>
-                  </div>
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
-                    <span>+ b) Tính chất tiếp tuyến cắt nhau: MA = MC, NB = NC ⇒ MN = MA + NB. Trong tam giác MON vuông tại O: AM · BN = MC · NC = OC² = R²</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,50đ</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>+ c) Áp dụng định lí Ta-lét chứng minh tỉ số KH = KC ⇒ K là trung điểm CH.</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,50đ</span>
-                  </div>
-                </div>
-              </div>
+                  {/* Bài 2 */}
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 border-t-2 border-slate-300 dark:border-slate-700">
+                    <td rowSpan={3} className="p-3 border-r border-slate-200 dark:border-slate-800 font-bold text-center text-purple-700 dark:text-purple-300 bg-purple-50/30 dark:bg-purple-950/20 align-top">
+                      Bài 2<br/>
+                      <span className="text-[11px] font-normal text-slate-500">(1,5 điểm)</span>
+                    </td>
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      <strong>a) (0,50 điểm):</strong><br/>
+                      - Vẽ hình đúng theo giả thiết bài toán.<br/>
+                      - Chỉ ra Ax, By là các tiếp tuyến của (O) tại A, B nên Ax ⊥ AB, By ⊥ AB ⇒ ∠MAO = 90°, ∠NBO = 90°.<br/>
+                      - Tiếp tuyến tại C cắt Ax tại M nên MC là tiếp tuyến ⇒ ∠MCO = 90°.<br/>
+                      - Tứ giác AMCO có ∠MAO + ∠MCO = 90° + 90° = 180° nên AMCO là tứ giác nội tiếp đường tròn đường kính MO.<br/>
+                      - Theo tính chất tiếp tuyến cắt nhau: OM là phân giác ∠AOC, ON là phân giác ∠BOC. Vì ∠AOC và ∠BOC là hai góc kề bù nên OM ⊥ ON ⇒ ∠MON = 90°.
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,50đ
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      <strong>b) (0,50 điểm):</strong><br/>
+                      - Theo tính chất hai tiếp tuyến cắt nhau: MA = MC và NB = NC.<br/>
+                      - Do C nằm trên đoạn MN nên: MN = MC + NC = MA + NB (điều phải chứng minh).<br/>
+                      - Tam giác MON vuông tại O (theo câu a) có OC ⊥ MN tại tiếp điểm C (OC = R là đường cao).<br/>
+                      - Áp dụng hệ thức lượng trong tam giác vuông MON: MC · NC = OC².<br/>
+                      - Thay MC = MA, NC = NB và OC = R ta được: <strong>AM · BN = R²</strong> (không đổi khi C di chuyển).
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,50đ
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      <strong>c) (0,50 điểm):</strong><br/>
+                      - Vì Ax ⊥ AB và By ⊥ AB nên Ax // By. Do KH // Ax nên KH // AM // BN.<br/>
+                      - Áp dụng định lí Ta-lét: Trong tam giác BMA có KH // AM ⇒ KH / AM = BK / BM.<br/>
+                      - Trong tam giác BNA có KH // BN ⇒ KH / BN = AK / AN.<br/>
+                      - Lại có AM // BN nên BK / BM = AK / AN ⇒ KH / AM = KC / AM ⇒ KH = KC.<br/>
+                      - Mà K, C, H thẳng hàng nên K là trung điểm của đoạn thẳng CH.
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,50đ
+                    </td>
+                  </tr>
 
-              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
-                <div className="flex items-center justify-between font-bold text-purple-700 dark:text-purple-300">
-                  <span>Bài 3 (0,5 điểm): Bất đẳng thức &amp; Giá trị nhỏ nhất</span>
-                  <span>0,5đ</span>
-                </div>
-                <div className="space-y-1.5 text-slate-600 dark:text-slate-400 pl-2">
-                  <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
-                    <span>+ Biến đổi Q = (x + y)/(xy) + 4xy = 2/(xy) + 4xy = (4xy + 1/(4xy)) + 7/(4xy)</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,25đ</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>+ Áp dụng BĐT Cauchy: 4xy + 1/(4xy) ≥ 2; lại có xy ≤ ((x+y)/2)² = 1 ⇒ 7/(4xy) ≥ 7/4. Kết luận min Q = 9 khi x = y = 1.</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">0,25đ</span>
-                  </div>
-                </div>
-              </div>
+                  {/* Bài 3 */}
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 border-t-2 border-slate-300 dark:border-slate-700">
+                    <td rowSpan={2} className="p-3 border-r border-slate-200 dark:border-slate-800 font-bold text-center text-purple-700 dark:text-purple-300 bg-purple-50/30 dark:bg-purple-950/20 align-top">
+                      Bài 3<br/>
+                      <span className="text-[11px] font-normal text-slate-500">(0,5 điểm)</span>
+                    </td>
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      Biến đổi biểu thức Q với x, y &gt; 0 và x + y = 2:<br/>
+                      Q = (1/x + 1/y) + 4xy = (x + y)/(xy) + 4xy = 2/(xy) + 4xy.<br/>
+                      Áp dụng bất đẳng thức Cauchy: x + y ≥ 2√(xy) ⇒ 2 ≥ 2√(xy) ⇒ xy ≤ 1.
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,25đ
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td className="p-3 border-r border-slate-200 dark:border-slate-800 leading-relaxed text-slate-700 dark:text-slate-300">
+                      Tách biểu thức Q theo kĩ thuật chọn điểm rơi Cauchy (tại x = y = 1, xy = 1):<br/>
+                      Q = (4xy + 1/(4xy)) + 7/(4xy).<br/>
+                      - Áp dụng BĐT Cauchy: 4xy + 1/(4xy) ≥ 2 · √(4xy · 1/(4xy)) = 2.<br/>
+                      - Vì xy ≤ 1 nên 7/(4xy) ≥ 7/(4 · 1) = 7/4 (hoặc tách Q = (4xy + 4/xy) - 2/xy: 4xy + 4/xy ≥ 8 và 2/xy ≥ 2... ⇒ Q ≥ 9).<br/>
+                      Dấu đẳng thức xảy ra khi và chỉ khi x = y = 1 (thỏa mãn x + y = 2).<br/>
+                      <strong>Kết luận:</strong> Giá trị nhỏ nhất của biểu thức Q là 9 khi x = y = 1.
+                    </td>
+                    <td className="p-3 font-bold text-center border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                      0,25đ
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+          </div>
 
-            <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-xs text-amber-800 dark:text-amber-300">
-              <strong>* Lưu ý sư phạm khi chấm bài tự luận:</strong> Học sinh giải theo cách khác đúng với chương trình THCS vẫn cho đủ điểm từng phần tương ứng theo thang điểm quy định.
-            </div>
+          <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-xs text-amber-800 dark:text-amber-300">
+            <strong>* Lưu ý sư phạm khi chấm bài tự luận:</strong> Học sinh giải theo cách khác đúng với chương trình THCS vẫn cho đủ điểm từng phần tương ứng theo thang điểm quy định.
           </div>
         </div>
       )}

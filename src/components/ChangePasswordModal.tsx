@@ -192,15 +192,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
                   required
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
-                  placeholder={
-                    currentUser.username === 'admin'
-                      ? 'toan@13579'
-                      : currentUser.username === 'giaovien.thuha'
-                      ? 'giaovien@123'
-                      : currentUser.username === 'hocsinh.minhduc'
-                      ? 'hocsinh@123'
-                      : 'Nhập mật khẩu khởi tạo'
-                  }
+                  placeholder="12345678"
                   className="w-full pl-9 pr-10 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 <button

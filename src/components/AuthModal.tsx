@@ -66,7 +66,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           return;
         }
         if (!password.trim()) {
-          setErrorMsg('Vui lòng nhập mật khẩu.');
+          setErrorMsg(
+            identifier.trim().toLowerCase() === 'admin'
+              ? 'Tài khoản Quản trị viên bắt buộc phải nhập mật khẩu mới vào được hệ thống!'
+              : 'Vui lòng nhập mật khẩu.'
+          );
           setIsSubmitting(false);
           return;
         }
@@ -135,7 +139,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           return;
         }
         if (identifier.trim().toLowerCase() === 'admin') {
-          setSuccessMsg('Tài khoản quản trị mặc định: tên đăng nhập "admin", mật khẩu ban đầu là "toan@13579".');
+          setSuccessMsg('Tài khoản quản trị mặc định: tên đăng nhập "admin", mật khẩu khởi tạo mặc định là "12345678".');
         } else {
           setSuccessMsg('Hệ thống đã ghi nhận yêu cầu khôi phục mật khẩu cho tài khoản ' + identifier);
         }
@@ -147,24 +151,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   };
 
-  const handleFillAdmin = () => {
+  const handleSelectAdmin = () => {
     setMode('LOGIN');
     setIdentifier('admin');
-    setPassword('toan@13579');
-    setErrorMsg('');
-    setSuccessMsg('Đã điền tài khoản Quản trị viên (admin / toan@13579). Nhấn "Đăng nhập ngay" để tiếp tục.');
+    setPassword('');
+    setErrorMsg('Tài khoản Quản trị viên (admin): Bạn phải nhập đúng mật khẩu vào ô bên dưới mới vào được.');
+    setSuccessMsg('');
   };
 
   const handleQuickDemo = (role: Role) => {
+    if (role === 'ADMIN') {
+      setMode('LOGIN');
+      setIdentifier('admin');
+      setPassword('');
+      setErrorMsg('Tài khoản Quản trị viên (admin) bắt buộc phải nhập đúng mật khẩu mới vào được!');
+      setSuccessMsg('');
+      return;
+    }
     switchRole(role);
     setSuccessMsg(
-      `Đã chuyển sang vai trò: ${
-        role === 'ADMIN'
-          ? 'Quản trị viên (admin)'
-          : role === 'TEACHER'
-          ? 'Giáo viên'
-          : 'Học sinh'
-      }`
+      `Đã chuyển sang vai trò: ${role === 'TEACHER' ? 'Giáo viên' : 'Học sinh'}`
     );
     setTimeout(() => {
       onClose();
@@ -240,32 +246,38 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Content Body */}
         <div className="p-6 max-h-[85vh] overflow-y-auto">
-          {/* Admin Credentials Quick Hint */}
-          <div className="mb-4 p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 flex items-center justify-between gap-2">
-            <div className="text-xs text-purple-900 dark:text-purple-200">
-              <span className="font-bold">Tài khoản Admin:</span>{' '}
-              <span className="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded text-purple-700 dark:text-purple-300">
-                admin
-              </span>{' '}
-              | Mật khẩu:{' '}
-              <span className="font-mono bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded text-purple-700 dark:text-purple-300">
-                toan@13579
-              </span>
+          {/* Admin Credentials & Security Notice */}
+          <div className="mb-4 p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 flex items-center justify-between gap-2">
+            <div className="text-xs text-purple-900 dark:text-purple-200 flex-1">
+              <div className="flex items-center gap-1.5 font-bold mb-0.5">
+                <ShieldAlert className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                <span>Bảo mật Quản trị viên (Admin)</span>
+              </div>
+              <div>
+                Tên đăng nhập:{' '}
+                <span className="font-mono font-bold bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded text-purple-700 dark:text-purple-300">
+                  admin
+                </span>{' '}
+                <span className="text-[11px] text-purple-700 dark:text-purple-300">
+                  (Bắt buộc nhập mật khẩu vào ô bên dưới mới vào được)
+                </span>
+              </div>
             </div>
             <button
               type="button"
-              onClick={handleFillAdmin}
-              className="text-[11px] px-2 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold cursor-pointer shrink-0 transition"
+              onClick={handleSelectAdmin}
+              className="text-[11px] px-2.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold cursor-pointer shrink-0 transition shadow-xs"
+              title="Điền tên tài khoản admin để nhập mật khẩu"
             >
-              Điền nhanh
+              Chọn admin
             </button>
           </div>
 
-          {/* Quick Demo Selector */}
+          {/* Role selection info */}
           <div className="mb-5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/50">
             <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-500" /> Chuyển nhanh vai trò kiểm thử:
+                <Sparkles className="w-3.5 h-3.5 text-blue-500" /> Chọn vai trò đăng nhập:
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -273,9 +285,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 type="button"
                 onClick={() => handleQuickDemo('ADMIN')}
                 className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold shadow-xs hover:border-purple-500 border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-0.5 transition cursor-pointer"
+                title="Admin phải nhập mật khẩu"
               >
                 <span>👨‍🏫 Admin</span>
-                <span className="text-[10px] text-slate-500 font-mono">admin</span>
+                <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold font-mono">Cần nhập MK</span>
               </button>
               <button
                 type="button"

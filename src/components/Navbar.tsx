@@ -68,6 +68,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleRoleChange = (newRole: Role) => {
+    if (newRole === 'ADMIN' && currentUser?.role !== 'ADMIN') {
+      setRoleDropdownOpen(false);
+      onOpenAuth();
+      return;
+    }
     switchRole(newRole);
     setRoleDropdownOpen(false);
   };

@@ -63,7 +63,7 @@ const DEFAULT_USERS: User[] = [
     name: 'Teacher Lê Thanh Tùng',
     username: 'admin',
     email: 'lethanhtungnhc@gmail.com',
-    password: 'toan@13579',
+    password: '12345678',
     role: 'ADMIN',
     avatar: '👨‍🏫',
     school: 'Trường TH, THCS Nguyễn Hữu Cảnh',
@@ -77,7 +77,7 @@ const DEFAULT_USERS: User[] = [
     name: 'Giáo viên Toán',
     username: 'giaovien',
     email: 'giaovien@toan9.edu.vn',
-    password: 'giaovien@123',
+    password: '12345678',
     role: 'TEACHER',
     avatar: '👩‍🏫',
     school: 'Trường TH, THCS Nguyễn Hữu Cảnh',
@@ -91,7 +91,7 @@ const DEFAULT_USERS: User[] = [
     name: 'Học sinh Lớp 9',
     username: 'hocsinh',
     email: 'hocsinh@toan9.edu.vn',
-    password: 'hocsinh@123',
+    password: '12345678',
     role: 'STUDENT',
     avatar: '🧑‍🎓',
     school: 'Trường TH, THCS Nguyễn Hữu Cảnh',
@@ -120,22 +120,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           ...parsed[adminIndex],
           username: 'admin',
           role: 'ADMIN',
-          password: parsed[adminIndex].password || 'toan@13579',
+          password: parsed[adminIndex].password || '12345678',
           school: parsed[adminIndex].school || 'Trường TH, THCS Nguyễn Hữu Cảnh',
           isLocked: false,
         };
       } else {
         parsed.unshift(DEFAULT_USERS[0]);
       }
-      return parsed.map((u) => ({
-        ...u,
-        username: u.username || u.email.split('@')[0],
-        isLocked: !!u.isLocked,
-        mustChangePassword:
-          u.mustChangePassword !== undefined
-            ? u.mustChangePassword
-            : (!u.passwordChangedAt && u.role !== 'ADMIN'),
-      }));
+      return parsed.map((u) => {
+        // Migrate old default placeholder passwords to the required 12345678
+        let pwd = u.password || '12345678';
+        let pwdHash = u.passwordHash;
+        let salt = u.salt;
+        if (!u.passwordChangedAt && (pwd === 'toan@13579' || pwd === 'giaovien@123' || pwd === 'hocsinh@123')) {
+          pwd = '12345678';
+          pwdHash = undefined; // Will be re-hashed by upgradeSecurity()
+          salt = undefined;
+        }
+
+        return {
+          ...u,
+          password: pwd,
+          passwordHash: pwdHash,
+          salt,
+          username: u.username || u.email.split('@')[0],
+          isLocked: !!u.isLocked,
+          mustChangePassword:
+            u.mustChangePassword !== undefined
+              ? u.mustChangePassword
+              : (!u.passwordChangedAt && u.role !== 'ADMIN'),
+        };
+      });
     } catch {
       return DEFAULT_USERS;
     }
@@ -262,6 +277,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanId = identifier.trim().toLowerCase();
     const cleanPass = (password || '').trim();
 
+    if (!cleanPass) {
+      return {
+        success: false,
+        message:
+          cleanId === 'admin'
+            ? 'Tài khoản Quản trị viên bắt buộc phải nhập mật khẩu mới vào được hệ thống!'
+            : 'Vui lòng nhập mật khẩu.',
+      };
+    }
+
     const found = users.find(
       (u) =>
         u.username.toLowerCase() === cleanId ||
@@ -272,6 +297,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return {
         success: false,
         message: 'Tên đăng nhập hoặc Email không tồn tại trong hệ thống.',
+      };
+    }
+
+    if (found.role === 'ADMIN' && !cleanPass) {
+      return {
+        success: false,
+        message: 'Tài khoản Quản trị viên bắt buộc phải nhập mật khẩu mới vào được!',
       };
     }
 
@@ -295,7 +327,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!isMatch) {
       return {
         success: false,
-        message: 'Mật khẩu không chính xác. Vui lòng kiểm tra lại!',
+        message:
+          found.role === 'ADMIN'
+            ? 'Mật khẩu Quản trị viên không chính xác. Vui lòng nhập đúng mật khẩu!'
+            : 'Mật khẩu không chính xác. Vui lòng kiểm tra lại!',
       };
     }
 
@@ -499,8 +534,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('toan9_current_user');
   };
 
-  // Quick switch role (protected: student cannot self-promote to admin)
+  // Quick switch role (protected: Admin cannot be assumed without password login)
   const switchRole = (newRole: Role) => {
+    // SECURITY: Admin account CANNOT be accessed through quick switch.
+    // User MUST enter password via standard login()!
+    if (newRole === 'ADMIN') {
+      return false;
+    }
+
     const target =
       users.find((u) => u.role === newRole && !u.isLocked) ||
       DEFAULT_USERS.find((u) => u.role === newRole);
@@ -520,7 +561,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         })
       );
       localStorage.setItem('toan9_current_user', JSON.stringify(target));
+      return true;
     }
+    return false;
   };
 
   const updateProfile = (updated: Partial<User>) => {
@@ -534,7 +577,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deleteUser = (id: string) => {
     setUsers((prev) => prev.filter((u) => u.id !== id));
     if (currentUser?.id === id) {
-      setCurrentUser(DEFAULT_USERS[0]);
+      setCurrentUser(null);
+      localStorage.removeItem('toan9_auth_session');
+      localStorage.removeItem('toan9_current_user');
     }
   };
 
