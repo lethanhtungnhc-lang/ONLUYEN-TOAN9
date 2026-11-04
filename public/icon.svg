@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)"/>
+
+  <!-- Compass / Circle geometric accent -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="4" stroke-dasharray="8 8"/>
+  <circle cx="256" cy="256" r="140" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+
+  <!-- Central Emblem: Open Book & Math Symbols -->
+  <g filter="url(#shadow)">
+    <!-- Book pages -->
+    <path d="M120 340 C180 320, 240 330, 256 348 C272 330, 332 320, 392 340 L392 230 C332 210, 272 220, 256 238 C240 220, 180 210, 120 230 Z" fill="#ffffff" opacity="0.95"/>
+    <path d="M256 240 L256 348" stroke="#cbd5e1" stroke-width="3"/>
+
+    <!-- Graduation Cap / Diamond -->
+    <polygon points="256,120 370,165 256,210 142,165" fill="url(#goldGrad)"/>
+    <path d="M200 188 L200 230 C200 248, 312 248, 312 230 L312 188" fill="url(#goldGrad)" opacity="0.9"/>
+    <!-- Tassel -->
+    <path d="M345 175 L365 220" stroke="#fef08a" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="365" cy="225" r="5" fill="#f59e0b"/>
+  </g>
+
+  <!-- Math formula texts on book -->
+  <!-- Left page: √x, ax² + bx + c = 0 -->
+  <text x="180" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="bold" fill="#1e40af" text-anchor="middle">√x² = |x|</text>
+  <text x="180" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#3b82f6" text-anchor="middle">ax² + bx + c = 0</text>
+
+  <!-- Right page: Viète, Δ = b² - 4ac -->
+  <text x="330" y="275" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#1e40af" text-anchor="middle">Δ = b² - 4ac</text>
+  <text x="330" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="600" fill="#3b82f6" text-anchor="middle">x₁ + x₂ = -b/a</text>
+
+  <!-- Bottom Badge: TOÁN 9 -->
+  <g transform="translate(256, 420)">
+    <rect x="-140" y="-36" width="280" height="60" rx="30" fill="url(#goldGrad)" filter="url(#shadow)"/>
+    <text x="0" y="6" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="900" fill="#1e293b" text-anchor="middle" letter-spacing="2">TOÁN 9</text>
+  </g>
+</svg>

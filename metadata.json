@@ -1,0 +1,6 @@
+{
+  "name": "Toán 9 – Chinh Phục Tri Thức",
+  "description": "Ứng dụng học tập và ôn luyện môn Toán 9 Chương trình GDPT 2018 - Tác giả Teacher Lê Thanh Tùng",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
