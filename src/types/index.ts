@@ -5,12 +5,21 @@ export interface User {
   name: string;
   username: string; // Tên đăng nhập
   email: string;
-  password?: string; // Mật khẩu tài khoản
+  password?: string; // Mật khẩu tài khoản (dành cho cấp lại/hiển thị Admin nếu có)
+  passwordHash?: string; // Mã băm mật khẩu bảo mật (Salted SHA-256)
+  salt?: string; // Chuỗi muối ngẫu nhiên chống Rainbow table
   role: Role;
   avatar?: string;
   school?: string;
   className?: string;
   createdAt: string;
+  isLocked?: boolean; // Trạng thái khóa tài khoản bởi Admin
+  lockedReason?: string; // Lý do tài khoản bị tạm khóa
+  lastLoginAt?: string; // Thời điểm đăng nhập thành công gần nhất
+  sessionToken?: string; // Token xác thực phiên đăng nhập an toàn
+  tokenExpiresAt?: number; // Thời gian hết hạn phiên đăng nhập (timestamp ms)
+  mustChangePassword?: boolean; // Bắt buộc đổi mật khẩu lần đầu đăng nhập trên web/app di động
+  passwordChangedAt?: string; // Thời điểm hoàn thành đổi mật khẩu cá nhân
 }
 
 export type CognitiveLevel = 'NHAN_BIET' | 'THONG_HIEU' | 'VAN_DUNG' | 'VAN_DUNG_CAO';

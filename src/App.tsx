@@ -33,7 +33,7 @@ const MainApp: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
   const [downloadModalOpen, setDownloadModalOpen] = useState<boolean>(false);
-  const { role } = useAuth();
+  const { role, currentUser } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors selection:bg-blue-600 selection:text-white">
@@ -77,10 +77,32 @@ const MainApp: React.FC = () => {
 
         {currentTab === 'dashboard' && (
           <>
-            {role === 'ADMIN' && <AdminPanel />}
-            {role === 'TEACHER' && <TeacherPanel />}
-            {role === 'STUDENT' && (
-              <StudentDashboard onNavigateToReview={() => setCurrentTab('review')} />
+            {!currentUser ? (
+              <div className="max-w-md mx-auto my-16 p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl text-center space-y-4">
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <User className="w-7 h-7" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                  Yêu Cầu Đăng Nhập
+                </h2>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Vui lòng đăng nhập với tài khoản Giáo viên, Quản trị viên hoặc Học sinh để truy cập không gian làm việc và theo dõi kết quả học tập.
+                </p>
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition cursor-pointer"
+                >
+                  Đăng nhập / Đăng ký ngay
+                </button>
+              </div>
+            ) : (
+              <>
+                {role === 'ADMIN' && <AdminPanel />}
+                {role === 'TEACHER' && <TeacherPanel />}
+                {role === 'STUDENT' && (
+                  <StudentDashboard onNavigateToReview={() => setCurrentTab('review')} />
+                )}
+              </>
             )}
           </>
         )}
@@ -168,10 +190,20 @@ const MainApp: React.FC = () => {
         onClose={() => setAuthModalOpen(false)}
       />
 
-      {/* Change Password Modal */}
+      {/* Forced Change Password Modal on First Login (Website or Phone App) */}
+      {currentUser && currentUser.mustChangePassword && (
+        <ChangePasswordModal
+          isOpen={true}
+          onClose={() => {}}
+          isForced={true}
+        />
+      )}
+
+      {/* Voluntary Change Password Modal */}
       <ChangePasswordModal
-        isOpen={changePasswordModalOpen}
+        isOpen={changePasswordModalOpen && (!currentUser || !currentUser.mustChangePassword)}
         onClose={() => setChangePasswordModalOpen(false)}
+        isForced={false}
       />
 
       {/* Smartphone App Download Modal */}

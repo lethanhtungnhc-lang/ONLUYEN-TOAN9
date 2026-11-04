@@ -15,6 +15,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { soundEffects } from '../utils/soundEffects';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { MathView } from './MathView';
@@ -78,10 +79,12 @@ export const ExamRoom: React.FC = () => {
 
   const handleSelectOption = (qId: string, value: string) => {
     if (isSubmitted) return;
+    soundEffects.playClick();
     setUserAnswers((prev) => ({ ...prev, [qId]: value }));
   };
 
   const toggleFlag = (qId: string) => {
+    soundEffects.playClick();
     setFlaggedQuestions((prev) => ({ ...prev, [qId]: !prev[qId] }));
   };
 
@@ -130,11 +133,16 @@ export const ExamRoom: React.FC = () => {
     setIsSubmitted(true);
 
     if (scaledScore >= 8) {
+      soundEffects.playFanfare();
       confetti({
         particleCount: 100,
         spread: 80,
         origin: { y: 0.6 },
       });
+    } else if (scaledScore >= 5) {
+      soundEffects.playCorrect();
+    } else {
+      soundEffects.playIncorrect();
     }
 
     const timeSpent = selectedExam.durationMinutes * 60 - timeLeft;

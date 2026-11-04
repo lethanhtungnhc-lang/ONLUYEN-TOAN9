@@ -11,15 +11,27 @@ import {
   BookOpen,
   Filter,
   Layers,
-  Award
+  Award,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { soundEffects } from '../utils/soundEffects';
 import { useApp } from '../context/AppContext';
 import { MathView } from './MathView';
 import { Question, CognitiveLevel, QuestionType } from '../types';
 
 export const PracticeView: React.FC = () => {
   const { questions, chapters, recordExerciseAttempt } = useApp();
+  const [isSoundMuted, setIsSoundMuted] = useState<boolean>(() => soundEffects.getIsMuted());
+
+  const handleToggleSound = () => {
+    const muted = soundEffects.toggleMute();
+    setIsSoundMuted(muted);
+    if (!muted) {
+      soundEffects.playClick();
+    }
+  };
   
   // Filters
   const [selectedChapter, setSelectedChapter] = useState<string>('ALL');
@@ -96,11 +108,14 @@ export const PracticeView: React.FC = () => {
     setIsAnswered(true);
 
     if (correct) {
+      soundEffects.playCorrect();
       confetti({
         particleCount: 50,
         spread: 60,
         origin: { y: 0.7 },
       });
+    } else {
+      soundEffects.playIncorrect();
     }
 
     // Record to persistent student notebook
@@ -169,6 +184,21 @@ export const PracticeView: React.FC = () => {
             <option value="VAN_DUNG">Vận dụng</option>
             <option value="VAN_DUNG_CAO">Vận dụng cao</option>
           </select>
+
+          {/* Sound Toggle Button */}
+          <button
+            type="button"
+            onClick={handleToggleSound}
+            className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+              !isSoundMuted
+                ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700'
+            }`}
+            title={!isSoundMuted ? 'Âm thanh: Đang BẬT' : 'Âm thanh: Đang TẮT'}
+          >
+            {!isSoundMuted ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">{!isSoundMuted ? 'Âm thanh: Bật' : 'Âm thanh: Tắt'}</span>
+          </button>
         </div>
       </div>
 

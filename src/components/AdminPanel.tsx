@@ -23,7 +23,11 @@ import {
   FileUp,
   KeyRound,
   Eye,
-  EyeOff
+  EyeOff,
+  Search,
+  X,
+  ShieldCheck,
+  Pencil
 } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { AddExamModal } from './AddExamModal';
@@ -59,7 +63,46 @@ export const AdminPanel: React.FC = () => {
     resetToDefaultData
   } = useApp();
 
-  const { allUsers, deleteUser, updateUserRole, currentUser, role } = useAuth();
+  const {
+    allUsers,
+    deleteUser,
+    updateUserRole,
+    currentUser,
+    role,
+    toggleLockUser,
+    adminResetPassword,
+    createUserByAdmin,
+    updateUserByAdmin,
+    revokeUserSession,
+    toggleRequirePasswordChange
+  } = useAuth();
+
+  // User management states
+  const [showCreateUserModal, setShowCreateUserModal] = useState<boolean>(false);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserUsername, setNewUserUsername] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserRole, setNewUserRole] = useState<Role>('STUDENT');
+  const [newUserSchool, setNewUserSchool] = useState('');
+  const [newUserClass, setNewUserClass] = useState('');
+  const [createUserStatus, setCreateUserStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const [resetPasswordTarget, setResetPasswordTarget] = useState<any | null>(null);
+  const [adminNewPass, setAdminNewPass] = useState('');
+  const [resetPassStatus, setResetPassStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const [lockTarget, setLockTarget] = useState<any | null>(null);
+  const [lockReason, setLockReason] = useState('Tạm khóa tài khoản theo chính sách bảo mật hoặc yêu cầu quản trị viên');
+
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState<'ALL' | Role>('ALL');
+  const [actionNotification, setActionNotification] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setActionNotification(msg);
+    setTimeout(() => setActionNotification(null), 3500);
+  };
 
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'USERS' | 'QUESTIONS' | 'REPORTS' | 'BACKUP'>('OVERVIEW');
 
@@ -102,6 +145,141 @@ export const AdminPanel: React.FC = () => {
   const totalTeachers = allUsers.filter(u => u.role === 'TEACHER').length;
   let totalLessons = 0;
   chapters.forEach(c => totalLessons += c.lessons.length);
+
+  // User Management Handlers
+  const handleCreateUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreateUserStatus(null);
+    if (!newUserName.trim() || !newUserUsername.trim() || !newUserPassword.trim() || !newUserEmail.trim()) {
+      setCreateUserStatus({ type: 'error', text: 'Vui lòng điền đầy đủ họ tên, tên đăng nhập, email và mật khẩu.' });
+      return;
+    }
+    const res = await createUserByAdmin(
+      newUserName.trim(),
+      newUserUsername.trim(),
+      newUserEmail.trim(),
+      newUserPassword.trim(),
+      newUserRole,
+      newUserSchool.trim() || 'THCS',
+      newUserClass.trim() || undefined
+    );
+    if (res.success) {
+      setCreateUserStatus({ type: 'success', text: res.message });
+      setTimeout(() => {
+        setShowCreateUserModal(false);
+        setNewUserName('');
+        setNewUserUsername('');
+        setNewUserEmail('');
+        setNewUserPassword('');
+        setNewUserSchool('');
+        setNewUserClass('');
+        setCreateUserStatus(null);
+      }, 900);
+      showToast(`Đã tạo thành công tài khoản ${newUserUsername.trim()}`);
+    } else {
+      setCreateUserStatus({ type: 'error', text: res.message });
+    }
+  };
+
+  const handleAdminResetPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetPasswordTarget) return;
+    if (!adminNewPass.trim() || adminNewPass.trim().length < 6) {
+      setResetPassStatus({ type: 'error', text: 'Mật khẩu mới tối thiểu 6 ký tự.' });
+      return;
+    }
+    const res = await adminResetPassword(resetPasswordTarget.id, adminNewPass.trim());
+    if (res.success) {
+      setResetPassStatus({ type: 'success', text: res.message });
+      showToast(`Đã đặt lại mật khẩu cho ${resetPasswordTarget.username || resetPasswordTarget.name}`);
+      setTimeout(() => {
+        setResetPasswordTarget(null);
+        setAdminNewPass('');
+        setResetPassStatus(null);
+      }, 1000);
+    } else {
+      setResetPassStatus({ type: 'error', text: res.message });
+    }
+  };
+
+  const handleToggleLockSubmit = () => {
+    if (!lockTarget) return;
+    const isCurrentlyLocked = !!lockTarget.isLocked;
+    toggleLockUser(lockTarget.id, isCurrentlyLocked ? undefined : lockReason.trim());
+    showToast(isCurrentlyLocked ? `Đã mở khóa tài khoản ${lockTarget.name}` : `Đã khóa tài khoản ${lockTarget.name}`);
+    setLockTarget(null);
+  };
+
+  const handleRevokeSession = (userId: string, userName: string) => {
+    revokeUserSession(userId);
+    showToast(`Đã thu hồi phiên đăng nhập của ${userName}. Người dùng phải đăng nhập lại.`);
+  };
+
+  // Edit user state and handlers
+  const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editUsername, setEditUsername] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editRole, setEditRole] = useState<Role>('STUDENT');
+  const [editSchool, setEditSchool] = useState('');
+  const [editClass, setEditClass] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+  const [editIsLocked, setEditIsLocked] = useState(false);
+  const [editLockedReason, setEditLockedReason] = useState('');
+  const [editMustChangePass, setEditMustChangePass] = useState(false);
+  const [editUserStatus, setEditUserStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleOpenEditUser = (u: any) => {
+    setEditingUser(u);
+    setEditName(u.name || '');
+    setEditUsername(u.username || '');
+    setEditEmail(u.email || '');
+    setEditRole(u.role || 'STUDENT');
+    setEditSchool(u.school || '');
+    setEditClass(u.className || '');
+    setEditPassword('');
+    setEditIsLocked(!!u.isLocked);
+    setEditLockedReason(u.lockedReason || '');
+    setEditMustChangePass(!!u.mustChangePassword);
+    setEditUserStatus(null);
+  };
+
+  const handleSaveEditUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    if (!editName.trim() || !editUsername.trim() || !editEmail.trim()) {
+      setEditUserStatus({ type: 'error', text: 'Vui lòng điền đủ họ tên, username và email.' });
+      return;
+    }
+
+    const updates: any = {
+      name: editName.trim(),
+      username: editUsername.trim(),
+      email: editEmail.trim(),
+      role: editRole,
+      school: editSchool.trim(),
+      className: editClass.trim(),
+      isLocked: editIsLocked,
+      lockedReason: editIsLocked ? (editLockedReason.trim() || 'Tạm khóa bởi Admin') : undefined,
+      mustChangePassword: editMustChangePass,
+    };
+
+    if (editPassword.trim()) {
+      if (editPassword.trim().length < 6) {
+        setEditUserStatus({ type: 'error', text: 'Mật khẩu mới phải có ít nhất 6 ký tự.' });
+        return;
+      }
+      await adminResetPassword(editingUser.id, editPassword.trim());
+    }
+
+    updateUserByAdmin(editingUser.id, updates);
+    setEditUserStatus({ type: 'success', text: 'Cập nhật tài khoản thành công!' });
+    showToast(`Đã lưu thay đổi cho tài khoản ${editUsername.trim()}`);
+    setTimeout(() => {
+      setEditingUser(null);
+      setEditUserStatus(null);
+    }, 1000);
+  };
 
   const handleCreateQuestion = (e: React.FormEvent) => {
     e.preventDefault();
@@ -483,114 +661,377 @@ export const AdminPanel: React.FC = () => {
 
       {/* TAB 2: USERS MANAGEMENT */}
       {activeTab === 'USERS' && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-3">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          {/* Action notification toast */}
+          {actionNotification && (
+            <div className="p-3.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200 text-xs font-semibold flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0" />
+                {actionNotification}
+              </span>
+              <button
+                onClick={() => setActionNotification(null)}
+                className="text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 p-1 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 gap-3">
             <div>
-              <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                <Users className="w-5 h-5 text-purple-600" />
-                Danh Sách Tài Khoản & Quản Lý Thông Tin Đăng Nhập
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Chế độ Quản trị viên (ADMIN): Được phép xem Tên đăng nhập và Mật khẩu của toàn bộ tài khoản để hỗ trợ cấp lại khi người dùng quên.
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                  <Users className="w-5 h-5 text-purple-600" />
+                  Quản Trị Người Dùng & Phân Quyền Hệ Thống
+                </h3>
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                  {allUsers.length} tài khoản
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Quản trị viên có toàn quyền: Tạo tài khoản, khóa / mở khóa, thu hồi phiên làm việc, cấp lại mật khẩu và phân quyền 3 nhóm (Admin, Giáo viên, Học sinh).
               </p>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+              <button
+                onClick={() => {
+                  setNewUserName('');
+                  setNewUserUsername('');
+                  setNewUserEmail('');
+                  setNewUserPassword('');
+                  setNewUserRole('STUDENT');
+                  setNewUserSchool('');
+                  setNewUserClass('');
+                  setCreateUserStatus(null);
+                  setShowCreateUserModal(true);
+                }}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+              >
+                <Plus className="w-4 h-4" /> Tạo tài khoản mới
+              </button>
+
               <button
                 onClick={handleExportExcelReport}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
                 title="Tải về danh sách học sinh theo định dạng Excel .xlsx"
               >
-                <FileSpreadsheet className="w-4 h-4" /> Xuất DS học sinh (.xlsx)
+                <FileSpreadsheet className="w-4 h-4" /> Xuất DS (.xlsx)
               </button>
-              <span className="text-xs text-slate-500">{allUsers.length} tài khoản</span>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* User Stats & Filters */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+            {/* Filter buttons */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+              <button
+                onClick={() => setUserRoleFilter('ALL')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  userRoleFilter === 'ALL'
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                Tất cả ({allUsers.length})
+              </button>
+              <button
+                onClick={() => setUserRoleFilter('STUDENT')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  userRoleFilter === 'STUDENT'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                Học sinh ({allUsers.filter((u) => u.role === 'STUDENT').length})
+              </button>
+              <button
+                onClick={() => setUserRoleFilter('TEACHER')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  userRoleFilter === 'TEACHER'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                Giáo viên ({allUsers.filter((u) => u.role === 'TEACHER').length})
+              </button>
+              <button
+                onClick={() => setUserRoleFilter('ADMIN')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  userRoleFilter === 'ADMIN'
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                Admin ({allUsers.filter((u) => u.role === 'ADMIN').length})
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="relative min-w-[220px]">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={userSearchQuery}
+                onChange={(e) => setUserSearchQuery(e.target.value)}
+                placeholder="Tìm họ tên, username, lớp..."
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+              />
+              {userSearchQuery && (
+                <button
+                  onClick={() => setUserSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
             <table className="w-full text-xs text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 font-semibold bg-slate-50/70 dark:bg-slate-800/40">
-                  <th className="py-2.5 px-3">STT</th>
-                  <th className="py-2.5 px-3">Họ và tên</th>
-                  <th className="py-2.5 px-3">Tên đăng nhập (Username)</th>
-                  <th className="py-2.5 px-3">Mật khẩu (Password)</th>
-                  <th className="py-2.5 px-3">Email</th>
-                  <th className="py-2.5 px-3">Đơn vị / Lớp</th>
-                  <th className="py-2.5 px-3">Vai trò</th>
-                  <th className="py-2.5 px-3 text-right">Thao tác</th>
+                  <th className="py-3 px-3">STT</th>
+                  <th className="py-3 px-3">Họ và tên</th>
+                  <th className="py-3 px-3">Tên đăng nhập (Username)</th>
+                  <th className="py-3 px-3">Mật khẩu & Mã hóa</th>
+                  <th className="py-3 px-3">Trạng thái</th>
+                  <th className="py-3 px-3">Đơn vị / Lớp</th>
+                  <th className="py-3 px-3">Vai trò</th>
+                  <th className="py-3 px-3">Đăng nhập cuối</th>
+                  <th className="py-3 px-3 text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {allUsers.map((u, idx) => {
-                  const isRevealed = !!revealedPasswords[u.id];
-                  const rawPass = u.password || 'toan@13579';
+                {allUsers
+                  .filter((u) => {
+                    const matchesRole = userRoleFilter === 'ALL' || u.role === userRoleFilter;
+                    const matchesSearch =
+                      !userSearchQuery.trim() ||
+                      u.name.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+                      (u.username && u.username.toLowerCase().includes(userSearchQuery.toLowerCase())) ||
+                      u.email.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+                      (u.className && u.className.toLowerCase().includes(userSearchQuery.toLowerCase()));
+                    return matchesRole && matchesSearch;
+                  })
+                  .map((u, idx) => {
+                    const isRevealed = !!revealedPasswords[u.id];
+                    const rawPass = u.password || 'toan@13579';
+                    const isLocked = !!u.isLocked;
 
-                  return (
-                    <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                      <td className="py-3 px-3 font-semibold text-slate-400">{idx + 1}</td>
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{u.avatar || '🧑‍🎓'}</span>
-                          <div>
-                            <span className="font-bold text-slate-900 dark:text-white block">{u.name}</span>
-                            <span className="text-[10px] text-slate-400">Tham gia: {u.createdAt || '2026-01-01'}</span>
+                    return (
+                      <tr
+                        key={u.id}
+                        className={`transition ${
+                          isLocked
+                            ? 'bg-rose-50/40 dark:bg-rose-950/20'
+                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                        }`}
+                      >
+                        <td className="py-3 px-3 font-semibold text-slate-400">{idx + 1}</td>
+                        <td className="py-3 px-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{u.avatar || '🧑‍🎓'}</span>
+                            <div>
+                              <span className="font-bold text-slate-900 dark:text-white block">{u.name}</span>
+                              <span className="text-[10px] text-slate-400 font-mono">{u.email}</span>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className="font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-900/60">
-                          {u.username || u.email.split('@')[0]}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                            {isRevealed ? rawPass : '••••••••'}
+                        </td>
+                        <td className="py-3 px-3">
+                          <span className="font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-900/60">
+                            {u.username || u.email.split('@')[0]}
                           </span>
-                          <button
-                            type="button"
-                            onClick={() => toggleRevealPassword(u.id)}
-                            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded cursor-pointer transition"
-                            title={isRevealed ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                        </td>
+                        <td className="py-3 px-3">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                                {isRevealed ? rawPass : '••••••••'}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => toggleRevealPassword(u.id)}
+                                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded cursor-pointer transition"
+                                title={isRevealed ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                              >
+                                {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                              <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                              <span>SHA-256 Salted</span>
+                            </div>
+                            {u.mustChangePassword ? (
+                              <div className="flex items-center gap-1 text-[10px] text-amber-700 dark:text-amber-300 font-semibold bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-900/60">
+                                <KeyRound className="w-3 h-3 text-amber-500 shrink-0" />
+                                <span>Cần đổi MK lần đầu</span>
+                              </div>
+                            ) : u.passwordChangedAt ? (
+                              <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
+                                <span>Đã đổi MK cá nhân</span>
+                              </div>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3">
+                          {isLocked ? (
+                            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-900">
+                              <Lock className="w-3 h-3" /> Đã khóa
+                            </div>
+                          ) : (
+                            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900">
+                              <CheckCircle2 className="w-3 h-3" /> Hoạt động
+                            </div>
+                          )}
+                          {isLocked && u.lockedReason && (
+                            <p className="text-[10px] text-rose-500 italic mt-0.5 max-w-[150px] truncate" title={u.lockedReason}>
+                              {u.lockedReason}
+                            </p>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 text-slate-600 dark:text-slate-400">
+                          <div className="font-medium">{u.school || 'THCS'}</div>
+                          {u.className && (
+                            <span className="inline-block text-[10px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 mt-0.5">
+                              Lớp: {u.className}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-3">
+                          <select
+                            value={u.role}
+                            onChange={(e) => updateUserRole(u.id, e.target.value as Role)}
+                            className={`text-xs px-2 py-1 rounded-lg font-bold border cursor-pointer ${
+                              u.role === 'ADMIN'
+                                ? 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-950 dark:text-purple-300'
+                                : u.role === 'TEACHER'
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300'
+                                : 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950 dark:text-blue-300'
+                            }`}
                           >
-                            {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                          </button>
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 text-slate-500 font-mono text-[11px]">{u.email}</td>
-                      <td className="py-3 px-3 text-slate-600 dark:text-slate-400">
-                        <div>{u.school || 'THCS'}</div>
-                        {u.className && <div className="text-[10px] text-slate-400">{u.className}</div>}
-                      </td>
-                      <td className="py-3 px-3">
-                        <select
-                          value={u.role}
-                          onChange={(e) => updateUserRole(u.id, e.target.value as Role)}
-                          className={`text-xs px-2 py-1 rounded-lg font-bold border cursor-pointer ${
-                            u.role === 'ADMIN' ? 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-950 dark:text-purple-300' :
-                            u.role === 'TEACHER' ? 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300' :
-                            'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950 dark:text-blue-300'
-                          }`}
-                        >
-                          <option value="ADMIN">ADMIN</option>
-                          <option value="TEACHER">TEACHER</option>
-                          <option value="STUDENT">STUDENT</option>
-                        </select>
-                      </td>
-                      <td className="py-3 px-3 text-right">
-                        {u.id !== currentUser?.id && (
-                          <button
-                            onClick={() => deleteUser(u.id)}
-                            className="p-1.5 text-rose-500 hover:text-rose-700 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950 transition cursor-pointer"
-                            title="Xóa tài khoản"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="TEACHER">TEACHER</option>
+                            <option value="STUDENT">STUDENT</option>
+                          </select>
+                        </td>
+                        <td className="py-3 px-3 text-slate-400 text-[11px]">
+                          {u.lastLoginAt ? (
+                            <span className="text-slate-600 dark:text-slate-300">
+                              {new Date(u.lastLoginAt).toLocaleDateString('vi-VN')}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic">Chưa đăng nhập</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            {/* Lock / Unlock Toggle Button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLockTarget(u);
+                                setLockReason(
+                                  u.isLocked
+                                    ? ''
+                                    : 'Tạm khóa tài khoản theo chính sách bảo mật hoặc yêu cầu quản trị viên'
+                                );
+                              }}
+                              className={`p-1.5 rounded-lg transition cursor-pointer ${
+                                isLocked
+                                  ? 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/60'
+                                  : 'text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/60'
+                              }`}
+                              title={isLocked ? 'Mở khóa tài khoản' : 'Khóa tài khoản này'}
+                            >
+                              {isLocked ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                            </button>
+
+                            {/* Edit User Button (Admin Full Power) */}
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditUser(u)}
+                              className="p-1.5 text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/60 rounded-lg transition cursor-pointer"
+                              title="Chỉnh sửa thông tin tài khoản (Họ tên, username, email, lớp, mật khẩu, vai trò)"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+
+                            {/* Reset Password Button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setResetPasswordTarget(u);
+                                setAdminNewPass('');
+                                setResetPassStatus(null);
+                              }}
+                              className="p-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/60 rounded-lg transition cursor-pointer"
+                              title="Đặt lại mật khẩu cho tài khoản"
+                            >
+                              <KeyRound className="w-4 h-4" />
+                            </button>
+
+                            {/* Toggle Force Change Password on Next Login */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                toggleRequirePasswordChange(u.id);
+                                showToast(
+                                  u.mustChangePassword
+                                    ? `Đã hủy yêu cầu đổi mật khẩu cho ${u.name}`
+                                    : `Đã kích hoạt yêu cầu đổi mật khẩu lần đầu cho ${u.name}`
+                                );
+                              }}
+                              className={`p-1.5 rounded-lg transition cursor-pointer ${
+                                u.mustChangePassword
+                                  ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/60 font-bold'
+                                  : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/60'
+                              }`}
+                              title={
+                                u.mustChangePassword
+                                  ? 'Tài khoản đang bị bắt buộc đổi mật khẩu. Bấm để hủy yêu cầu.'
+                                  : 'Bắt buộc người dùng này phải đổi mật khẩu ở lần đăng nhập tiếp theo'
+                              }
+                            >
+                              <ShieldAlert className="w-4 h-4" />
+                            </button>
+
+                            {/* Revoke Session Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleRevokeSession(u.id, u.name)}
+                              className="p-1.5 text-slate-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/60 rounded-lg transition cursor-pointer"
+                              title="Thu hồi phiên đăng nhập (buộc đăng nhập lại trên thiết bị)"
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                            </button>
+
+                            {/* Delete User Button (not allowed for current admin) */}
+                            {u.id !== currentUser?.id && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (confirm(`Bạn có chắc chắn muốn xóa tài khoản ${u.name} (${u.username})?`)) {
+                                    deleteUser(u.id);
+                                    showToast(`Đã xóa tài khoản ${u.name}`);
+                                  }
+                                }}
+                                className="p-1.5 text-rose-500 hover:text-rose-700 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950 transition cursor-pointer"
+                                title="Xóa tài khoản"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
@@ -1210,6 +1651,588 @@ Cho tam giác ABC vuông tại A có AB = 6cm, AC = 8cm. Bán kính đường tr
         isOpen={showAddExamModal}
         onClose={() => setShowAddExamModal(false)}
       />
+
+      {/* Modal Create User by Admin */}
+      {showCreateUserModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                    Tạo Tài Khoản Người Dùng Mới
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Mật khẩu sẽ được mã hóa an toàn bằng SHA-256 + Salt
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreateUserModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {createUserStatus && (
+              <div
+                className={`p-3 rounded-xl text-xs font-semibold ${
+                  createUserStatus.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900'
+                    : 'bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-900'
+                }`}
+              >
+                {createUserStatus.text}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateUserSubmit} className="space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Họ và tên: <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newUserName}
+                    onChange={(e) => setNewUserName(e.target.value)}
+                    placeholder="Nguyễn Văn A"
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Tên đăng nhập (Username): <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newUserUsername}
+                    onChange={(e) => setNewUserUsername(e.target.value)}
+                    placeholder="nguyenvana hoặc hs.vana"
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Email: <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    placeholder="student@school.edu.vn"
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Mật khẩu ban đầu: <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newUserPassword}
+                    onChange={(e) => setNewUserPassword(e.target.value)}
+                    placeholder="Tối thiểu 6 ký tự"
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Nhóm quyền (Vai trò): <span className="text-rose-500">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewUserRole('STUDENT')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
+                      newUserRole === 'STUDENT'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    🧑‍🎓 HỌC SINH
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewUserRole('TEACHER')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
+                      newUserRole === 'TEACHER'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    👩‍🏫 GIÁO VIÊN
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewUserRole('ADMIN')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
+                      newUserRole === 'ADMIN'
+                        ? 'border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    ⚡ ADMIN
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Trường học:
+                  </label>
+                  <input
+                    type="text"
+                    value={newUserSchool}
+                    onChange={(e) => setNewUserSchool(e.target.value)}
+                    placeholder="THCS Chu Văn An"
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Lớp học:
+                  </label>
+                  <input
+                    type="text"
+                    value={newUserClass}
+                    onChange={(e) => setNewUserClass(e.target.value)}
+                    placeholder="9A1, 9A2..."
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateUserModal(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs cursor-pointer"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-500/20 transition cursor-pointer"
+                >
+                  Xác nhận tạo tài khoản
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Admin Reset Password for a User */}
+      {resetPasswordTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                    Đặt Lại Mật Khẩu (Admin)
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Cấp lại mật khẩu mới cho người dùng
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setResetPasswordTarget(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+              <div><span className="text-slate-400">Người dùng:</span> <strong className="text-slate-800 dark:text-white">{resetPasswordTarget.name}</strong></div>
+              <div><span className="text-slate-400">Tên đăng nhập:</span> <span className="font-mono text-blue-600 font-bold">{resetPasswordTarget.username || resetPasswordTarget.email}</span></div>
+              <div><span className="text-slate-400">Vai trò:</span> <span className="font-bold">{resetPasswordTarget.role}</span></div>
+            </div>
+
+            {resetPassStatus && (
+              <div
+                className={`p-3 rounded-xl text-xs font-semibold ${
+                  resetPassStatus.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900'
+                    : 'bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-900'
+                }`}
+              >
+                {resetPassStatus.text}
+              </div>
+            )}
+
+            <form onSubmit={handleAdminResetPasswordSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Mật khẩu mới: <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={adminNewPass}
+                  onChange={(e) => setAdminNewPass(e.target.value)}
+                  placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Mật khẩu này sẽ được băm SHA-256 + Salt tự động và lưu an toàn.
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setResetPasswordTarget(null)}
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs cursor-pointer"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition cursor-pointer"
+                >
+                  Lưu mật khẩu mới
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Lock / Unlock User */}
+      {lockTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className={`p-2 rounded-xl ${
+                    lockTarget.isLocked
+                      ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600'
+                      : 'bg-rose-100 dark:bg-rose-950 text-rose-600'
+                  }`}
+                >
+                  {lockTarget.isLocked ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                    {lockTarget.isLocked ? 'Mở Khóa Tài Khoản' : 'Khóa Tài Khoản Người Dùng'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {lockTarget.isLocked ? 'Khôi phục quyền đăng nhập' : 'Ngăn người dùng đăng nhập hệ thống'}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLockTarget(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+              <div><span className="text-slate-400">Tài khoản:</span> <strong className="text-slate-800 dark:text-white">{lockTarget.name}</strong></div>
+              <div><span className="text-slate-400">Tên đăng nhập:</span> <span className="font-mono text-purple-600 font-bold">{lockTarget.username || lockTarget.email}</span></div>
+              <div><span className="text-slate-400">Trạng thái hiện tại:</span> <span className={`font-bold ${lockTarget.isLocked ? 'text-rose-600' : 'text-emerald-600'}`}>{lockTarget.isLocked ? 'Đang bị khóa' : 'Đang hoạt động'}</span></div>
+            </div>
+
+            {!lockTarget.isLocked ? (
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Lý do tạm khóa:
+                </label>
+                <input
+                  type="text"
+                  value={lockReason}
+                  onChange={(e) => setLockReason(e.target.value)}
+                  placeholder="Nhập lý do khóa..."
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                />
+                <p className="text-[11px] text-slate-400">
+                  Khi bị khóa, phiên đăng nhập hiện tại sẽ bị thu hồi ngay lập tức và người dùng không thể đăng nhập.
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Tài khoản này đang bị khóa {lockTarget.lockedReason ? `vì lý do: "${lockTarget.lockedReason}"` : ''}.
+                Bạn có chắc chắn muốn mở khóa để người dùng tiếp tục đăng nhập và học tập?
+              </p>
+            )}
+
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setLockTarget(null)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs cursor-pointer"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={handleToggleLockSubmit}
+                className={`flex-1 py-2.5 rounded-xl text-white font-bold text-xs shadow-md transition cursor-pointer ${
+                  lockTarget.isLocked
+                    ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20'
+                    : 'bg-rose-600 hover:bg-rose-700 shadow-rose-500/20'
+                }`}
+              >
+                {lockTarget.isLocked ? 'Xác nhận mở khóa' : 'Xác nhận khóa'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edit User by Admin */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600">
+                  <Pencil className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                    Chỉnh Sửa Tài Khoản Người Dùng
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Quản trị viên có toàn quyền cập nhật thông tin và phân quyền
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingUser(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {editUserStatus && (
+              <div
+                className={`p-3 rounded-xl text-xs font-semibold ${
+                  editUserStatus.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900'
+                    : 'bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-900'
+                }`}
+              >
+                {editUserStatus.text}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveEditUser} className="space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Họ và tên: <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Tên đăng nhập (Username): <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editUsername}
+                    onChange={(e) => setEditUsername(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Email: <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Đổi mật khẩu mới (Tùy chọn):
+                  </label>
+                  <input
+                    type="text"
+                    value={editPassword}
+                    onChange={(e) => setEditPassword(e.target.value)}
+                    placeholder="Để trống nếu giữ nguyên"
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Nhóm quyền (Phân quyền vai trò):
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditRole('STUDENT')}
+                    className={`p-2 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
+                      editRole === 'STUDENT'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    🧑‍🎓 HỌC SINH
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditRole('TEACHER')}
+                    className={`p-2 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
+                      editRole === 'TEACHER'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    👩‍🏫 GIÁO VIÊN
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditRole('ADMIN')}
+                    className={`p-2 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${
+                      editRole === 'ADMIN'
+                        ? 'border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
+                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    ⚡ ADMIN
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Đơn vị / Trường học:
+                  </label>
+                  <input
+                    type="text"
+                    value={editSchool}
+                    onChange={(e) => setEditSchool(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Lớp phụ trách / học tập:
+                  </label>
+                  <input
+                    type="text"
+                    value={editClass}
+                    onChange={(e) => setEditClass(e.target.value)}
+                    className="w-full p-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Toggles for lock & force password change */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editMustChangePass}
+                    onChange={(e) => setEditMustChangePass(e.target.checked)}
+                    className="w-4 h-4 text-purple-600 rounded"
+                  />
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    Bắt buộc đổi mật khẩu ở lần đăng nhập tiếp theo
+                  </span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editIsLocked}
+                    onChange={(e) => setEditIsLocked(e.target.checked)}
+                    className="w-4 h-4 text-rose-600 rounded"
+                  />
+                  <span className="font-semibold text-rose-600 dark:text-rose-400">
+                    Tạm khóa tài khoản này (không cho phép đăng nhập)
+                  </span>
+                </label>
+
+                {editIsLocked && (
+                  <input
+                    type="text"
+                    value={editLockedReason}
+                    onChange={(e) => setEditLockedReason(e.target.value)}
+                    placeholder="Nhập lý do tạm khóa..."
+                    className="w-full p-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                  />
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs cursor-pointer"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-500/20 transition cursor-pointer"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

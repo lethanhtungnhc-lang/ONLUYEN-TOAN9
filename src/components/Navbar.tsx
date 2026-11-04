@@ -162,74 +162,83 @@ export const Navbar: React.FC<NavbarProps> = ({
               {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
             </button>
 
-            {/* Role switch dropdown & user account */}
-            <div className="relative">
-              <button
-                onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                className="flex items-center gap-2 pl-2 pr-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition cursor-pointer"
-              >
-                <span className="text-base">{currentUser?.avatar || '🧑‍🎓'}</span>
-                <span className="max-w-[90px] sm:max-w-[120px] truncate hidden md:inline">
-                  {currentUser?.name || 'Tài khoản'}
-                </span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase ${
-                  role === 'ADMIN'
-                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
-                    : role === 'TEACHER'
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                    : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
-                }`}>
-                  {role === 'ADMIN' ? 'Admin' : role === 'TEACHER' ? 'G.Viên' : 'Học sinh'}
-                </span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-              </button>
+            {/* User Account / Login State */}
+            {currentUser ? (
+              <div className="relative">
+                <button
+                  onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                  className="flex items-center gap-2 pl-2 pr-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition cursor-pointer"
+                >
+                  <span className="text-base">{currentUser.avatar || '🧑‍🎓'}</span>
+                  <span className="max-w-[90px] sm:max-w-[120px] truncate hidden md:inline">
+                    {currentUser.name}
+                  </span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase ${
+                    role === 'ADMIN'
+                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300'
+                      : role === 'TEACHER'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                      : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
+                  }`}>
+                    {role === 'ADMIN' ? 'Admin' : role === 'TEACHER' ? 'G.Viên' : 'Học sinh'}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </button>
 
-              {roleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 animate-in fade-in duration-150">
-                  <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800">
-                    <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                      {currentUser?.name}
+                {roleDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50 animate-in fade-in duration-150">
+                    <div className="px-3.5 py-2 border-b border-slate-100 dark:border-slate-800">
+                      <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        {currentUser.name}
+                      </div>
+                      <div className="text-[11px] text-blue-600 dark:text-blue-400 font-mono truncate">
+                        @{currentUser.username}
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate">
+                        {currentUser.school || 'Trường THCS'}
+                      </div>
                     </div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                      {currentUser?.email}
-                    </div>
-                  </div>
 
-                  <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Chuyển nhanh vai trò
-                  </div>
+                    {/* Only ADMIN can quick switch roles for testing */}
+                    {currentUser?.role === 'ADMIN' && (
+                      <>
+                        <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                          Chuyển nhanh vai trò (Admin)
+                        </div>
 
-                  <button
-                    onClick={() => handleRoleChange('ADMIN')}
-                    className={`w-full px-3.5 py-2 text-left text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer ${
-                      role === 'ADMIN' ? 'font-bold text-purple-600 dark:text-purple-400 bg-purple-50/50 dark:bg-purple-950/30' : 'text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <span>👨‍🏫 Quản trị viên (Teacher Tùng)</span>
-                    {role === 'ADMIN' && <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />}
-                  </button>
+                        <button
+                          onClick={() => handleRoleChange('ADMIN')}
+                          className={`w-full px-3.5 py-2 text-left text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer ${
+                            (role as string) === 'ADMIN' ? 'font-bold text-purple-600 dark:text-purple-400 bg-purple-50/50 dark:bg-purple-950/30' : 'text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <span>👨‍🏫 Quản trị viên (Teacher Tùng)</span>
+                          {(role as string) === 'ADMIN' && <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />}
+                        </button>
 
-                  <button
-                    onClick={() => handleRoleChange('TEACHER')}
-                    className={`w-full px-3.5 py-2 text-left text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer ${
-                      role === 'TEACHER' ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/30' : 'text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <span>👩‍🏫 Giáo viên (Cô Thu Hà)</span>
-                    {role === 'TEACHER' && <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />}
-                  </button>
+                        <button
+                          onClick={() => handleRoleChange('TEACHER')}
+                          className={`w-full px-3.5 py-2 text-left text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer ${
+                            (role as string) === 'TEACHER' ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/30' : 'text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <span>👩‍🏫 Giáo viên (Cô Thu Hà)</span>
+                          {(role as string) === 'TEACHER' && <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />}
+                        </button>
 
-                  <button
-                    onClick={() => handleRoleChange('STUDENT')}
-                    className={`w-full px-3.5 py-2 text-left text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer ${
-                      role === 'STUDENT' ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30' : 'text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <span>🧑‍🎓 Học sinh (Em Minh Đức)</span>
-                    {role === 'STUDENT' && <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />}
-                  </button>
+                        <button
+                          onClick={() => handleRoleChange('STUDENT')}
+                          className={`w-full px-3.5 py-2 text-left text-xs flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer ${
+                            (role as string) === 'STUDENT' ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30' : 'text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <span>🧑‍🎓 Học sinh (Em Minh Đức)</span>
+                          {(role as string) === 'STUDENT' && <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />}
+                        </button>
 
-                  <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+                        <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+                      </>
+                    )}
 
                   <button
                     onClick={() => {
@@ -265,6 +274,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               )}
             </div>
+          ) : null}
 
             {/* Mobile Menu Button */}
             <button

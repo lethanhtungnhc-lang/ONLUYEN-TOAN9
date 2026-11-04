@@ -1,9 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, Role } from '../types';
+import {
+  generateSalt,
+  hashPassword,
+  verifyPassword,
+  generateSessionToken,
+  SESSION_DURATION_MS,
+  AuthSession
+} from '../utils/security';
 
 interface AuthContextType {
   currentUser: User | null;
   role: Role;
+  isAuthenticated: boolean;
+  isStandalonePWA: boolean;
   login: (identifier: string, password?: string) => Promise<{ success: boolean; message: string }>;
   register: (
     name: string,
@@ -20,7 +30,31 @@ interface AuthContextType {
   allUsers: User[];
   deleteUser: (id: string) => void;
   updateUserRole: (id: string, newRole: Role) => void;
+  // Admin Management Operations
+  toggleLockUser: (id: string, reason?: string) => void;
+  adminResetPassword: (id: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+  createUserByAdmin: (
+    name: string,
+    username: string,
+    email: string,
+    password: string,
+    role: Role,
+    school?: string,
+    className?: string
+  ) => Promise<{ success: boolean; message: string }>;
+  updateUserByAdmin: (id: string, updatedFields: Partial<User>) => void;
+  revokeUserSession: (id: string) => void;
+  toggleRequirePasswordChange: (id: string) => void;
 }
+
+// Check if running in standalone PWA mode on iOS or Android
+export const isRunningStandalone = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true
+  );
+};
 
 // Default initial accounts with requested admin credentials
 const DEFAULT_USERS: User[] = [
@@ -35,6 +69,8 @@ const DEFAULT_USERS: User[] = [
     school: 'Tác giả & Quản trị viên Hệ thống',
     className: 'Toán 9 GDPT 2018',
     createdAt: '2026-01-01',
+    isLocked: false,
+    mustChangePassword: false,
   },
   {
     id: 'user-teacher',
@@ -47,6 +83,8 @@ const DEFAULT_USERS: User[] = [
     school: 'THCS Giảng Võ',
     className: 'Chủ nhiệm 9A1 & 9A2',
     createdAt: '2026-01-10',
+    isLocked: false,
+    mustChangePassword: true, // Yêu cầu đổi mật khẩu lần đầu
   },
   {
     id: 'user-student',
@@ -59,24 +97,31 @@ const DEFAULT_USERS: User[] = [
     school: 'THCS Lê Quý Đôn',
     className: 'Lớp 9A1',
     createdAt: '2026-02-15',
+    isLocked: false,
+    mustChangePassword: true, // Yêu cầu đổi mật khẩu lần đầu
   },
 ];
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isStandalone = isRunningStandalone();
+
+  // Users repository in LocalStorage
   const [users, setUsers] = useState<User[]>(() => {
     try {
       const stored = localStorage.getItem('toan9_users');
       if (!stored) return DEFAULT_USERS;
       const parsed: User[] = JSON.parse(stored);
-      // Ensure admin exists with username 'admin' and password 'toan@13579'
+      // Ensure admin exists with username 'admin'
       const adminIndex = parsed.findIndex((u) => u.username === 'admin' || u.role === 'ADMIN');
       if (adminIndex >= 0) {
         parsed[adminIndex] = {
           ...parsed[adminIndex],
           username: 'admin',
+          role: 'ADMIN',
           password: parsed[adminIndex].password || 'toan@13579',
+          isLocked: false,
         };
       } else {
         parsed.unshift(DEFAULT_USERS[0]);
@@ -84,33 +129,105 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return parsed.map((u) => ({
         ...u,
         username: u.username || u.email.split('@')[0],
-        password: u.password || '123456',
+        isLocked: !!u.isLocked,
+        mustChangePassword:
+          u.mustChangePassword !== undefined
+            ? u.mustChangePassword
+            : (!u.passwordChangedAt && u.role !== 'ADMIN'),
       }));
     } catch {
       return DEFAULT_USERS;
     }
   });
 
+  // Current logged in user with session validation
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
-      const stored = localStorage.getItem('toan9_current_user');
-      if (stored) {
-        const parsed: User = JSON.parse(stored);
-        if (parsed.username === 'admin' || parsed.role === 'ADMIN') {
-          return {
-            ...parsed,
-            username: 'admin',
-            password: parsed.password || 'toan@13579',
-          };
+      // 1. Check persistent secure session
+      const storedSession = localStorage.getItem('toan9_auth_session');
+      if (storedSession) {
+        const session: AuthSession = JSON.parse(storedSession);
+
+        // Check if token has expired
+        if (session.expiresAt && Date.now() > session.expiresAt) {
+          localStorage.removeItem('toan9_auth_session');
+          localStorage.removeItem('toan9_current_user');
+          return null;
         }
-        return parsed;
+
+        // Check PWA requirement: When installed as standalone PWA on Android or iOS,
+        // if user hasn't logged in on standalone yet, require 1-time login in standalone mode
+        if (isStandalone && !session.isStandalonePWA) {
+          // Fresh launch in standalone mode requires 1-time login in the standalone app
+          return null;
+        }
+
+        // Match user by ID
+        const storedUsers = localStorage.getItem('toan9_users');
+        const userList: User[] = storedUsers ? JSON.parse(storedUsers) : DEFAULT_USERS;
+        const matched = userList.find((u) => u.id === session.userId);
+
+        if (matched) {
+          if (matched.isLocked) {
+            localStorage.removeItem('toan9_auth_session');
+            localStorage.removeItem('toan9_current_user');
+            return null;
+          }
+          // Validate token revocation
+          if (matched.sessionToken && matched.sessionToken !== session.token) {
+            localStorage.removeItem('toan9_auth_session');
+            localStorage.removeItem('toan9_current_user');
+            return null;
+          }
+          return matched;
+        }
       }
-      return DEFAULT_USERS[0]; // Default to Admin Teacher Lê Thanh Tùng
+
+      // 2. Check legacy current user cache if valid
+      const storedUser = localStorage.getItem('toan9_current_user');
+      if (storedUser) {
+        const parsed: User = JSON.parse(storedUser);
+        if (!parsed.isLocked) {
+          return parsed;
+        }
+      }
+
+      // Default to initial Admin Teacher Lê Thanh Tùng for seamless first experience
+      return DEFAULT_USERS[0];
     } catch {
       return DEFAULT_USERS[0];
     }
   });
 
+  // Automatically upgrade unhashed passwords to salted SHA-256 hashes
+  useEffect(() => {
+    const upgradeSecurity = async () => {
+      let changed = false;
+      const upgraded = await Promise.all(
+        users.map(async (u) => {
+          if (!u.passwordHash && u.password) {
+            changed = true;
+            const salt = generateSalt();
+            const passwordHash = await hashPassword(u.password, salt);
+            return {
+              ...u,
+              salt,
+              passwordHash,
+            };
+          }
+          return u;
+        })
+      );
+
+      if (changed) {
+        setUsers(upgraded);
+      }
+    };
+
+    upgradeSecurity();
+  }, []);
+
+  // Save users to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('toan9_users', JSON.stringify(users));
@@ -119,19 +236,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [users]);
 
+  // Keep currentUser in sync with users state
   useEffect(() => {
-    try {
-      if (currentUser) {
-        localStorage.setItem('toan9_current_user', JSON.stringify(currentUser));
-      } else {
+    if (!currentUser) return;
+    const fresh = users.find((u) => u.id === currentUser.id);
+    if (fresh) {
+      if (fresh.isLocked) {
+        // User was locked by admin, immediately disconnect
+        setCurrentUser(null);
+        localStorage.removeItem('toan9_auth_session');
         localStorage.removeItem('toan9_current_user');
+      } else {
+        localStorage.setItem('toan9_current_user', JSON.stringify(fresh));
       }
-    } catch (e) {
-      console.error('Failed to save current user', e);
     }
-  }, [currentUser]);
+  }, [users, currentUser]);
 
-  const login = async (identifier: string, password?: string): Promise<{ success: boolean; message: string }> => {
+  // Authenticate user with password verification and session token generation
+  const login = async (
+    identifier: string,
+    password?: string
+  ): Promise<{ success: boolean; message: string }> => {
     const cleanId = identifier.trim().toLowerCase();
     const cleanPass = (password || '').trim();
 
@@ -148,20 +273,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
-    if (found.password && cleanPass !== found.password) {
+    if (found.isLocked) {
+      return {
+        success: false,
+        message: `Tài khoản đã bị tạm khóa: ${
+          found.lockedReason || 'Liên hệ Quản trị viên để được mở khóa.'
+        }`,
+      };
+    }
+
+    // Verify password using salted SHA-256 hash or legacy fallback
+    let isMatch = false;
+    if (found.passwordHash && found.salt) {
+      isMatch = await verifyPassword(cleanPass, found.salt, found.passwordHash);
+    } else if (found.password) {
+      isMatch = cleanPass === found.password;
+    }
+
+    if (!isMatch) {
       return {
         success: false,
         message: 'Mật khẩu không chính xác. Vui lòng kiểm tra lại!',
       };
     }
 
-    setCurrentUser(found);
+    // Generate secure token & session with 30-day persistence
+    const sessionToken = generateSessionToken();
+    const tokenExpiresAt = Date.now() + SESSION_DURATION_MS;
+    const nowIso = new Date().toISOString();
+
+    const session: AuthSession = {
+      userId: found.id,
+      token: sessionToken,
+      createdAt: Date.now(),
+      expiresAt: tokenExpiresAt,
+      isStandalonePWA: isStandalone,
+    };
+
+    localStorage.setItem('toan9_auth_session', JSON.stringify(session));
+
+    // Ensure password hash exists
+    let userSalt = found.salt;
+    let userHash = found.passwordHash;
+    if (!userHash) {
+      userSalt = generateSalt();
+      userHash = await hashPassword(cleanPass, userSalt);
+    }
+
+    // Check first login on website or installed mobile PWA without personal password change:
+    const isFirstTimeLogin = !found.passwordChangedAt && found.role !== 'ADMIN';
+    const isMobileFirstInstall = isStandalone && !found.passwordChangedAt;
+    const shouldRequireChange = found.mustChangePassword === true || isFirstTimeLogin || isMobileFirstInstall;
+
+    const updatedUser: User = {
+      ...found,
+      salt: userSalt,
+      passwordHash: userHash,
+      sessionToken,
+      tokenExpiresAt,
+      lastLoginAt: nowIso,
+      mustChangePassword: shouldRequireChange,
+    };
+
+    setUsers((prev) => prev.map((u) => (u.id === found.id ? updatedUser : u)));
+    setCurrentUser(updatedUser);
+    localStorage.setItem('toan9_current_user', JSON.stringify(updatedUser));
+
     return {
       success: true,
       message: `Chào mừng ${found.name} đã đăng nhập thành công!`,
     };
   };
 
+  // Register new account with salted SHA-256 password hashing
   const register = async (
     name: string,
     username: string,
@@ -178,35 +362,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (users.some((u) => u.username.toLowerCase() === cleanUsername)) {
-      return { success: false, message: `Tên đăng nhập "${username.trim()}" đã được sử dụng. Vui lòng chọn tên khác.` };
+      return {
+        success: false,
+        message: `Tên đăng nhập "${username.trim()}" đã được sử dụng. Vui lòng chọn tên khác.`,
+      };
     }
 
     if (users.some((u) => u.email.toLowerCase() === cleanEmail)) {
-      return { success: false, message: `Địa chỉ Email "${email.trim()}" đã được đăng ký trong hệ thống.` };
+      return {
+        success: false,
+        message: `Địa chỉ Email "${email.trim()}" đã được đăng ký trong hệ thống.`,
+      };
     }
 
     if (!password || password.trim().length < 6) {
       return { success: false, message: 'Mật khẩu phải có độ dài từ 6 ký tự trở lên.' };
     }
 
+    // Hash password with cryptographically random salt
+    const salt = generateSalt();
+    const passwordHash = await hashPassword(password.trim(), salt);
+    const sessionToken = generateSessionToken();
+    const tokenExpiresAt = Date.now() + SESSION_DURATION_MS;
+    const nowIso = new Date().toISOString();
+
     const newUser: User = {
       id: `user-${Date.now()}`,
       name: name.trim(),
       username: username.trim(),
       email: email.trim(),
-      password: password.trim(),
+      password: password.trim(), // Keep accessible for Admin display per user requirement
+      passwordHash,
+      salt,
       role,
       avatar: role === 'ADMIN' ? '👨‍🏫' : role === 'TEACHER' ? '👩‍🏫' : '🧑‍🎓',
       school: school?.trim() || 'Trường THCS',
       className: role === 'STUDENT' ? 'Lớp 9' : 'Bộ môn Toán',
-      createdAt: new Date().toISOString().split('T')[0],
+      createdAt: nowIso.split('T')[0],
+      isLocked: false,
+      sessionToken,
+      tokenExpiresAt,
+      lastLoginAt: nowIso,
+      mustChangePassword: true, // Yêu cầu đổi mật khẩu lần đầu đăng nhập trên website/app
     };
+
+    const session: AuthSession = {
+      userId: newUser.id,
+      token: sessionToken,
+      createdAt: Date.now(),
+      expiresAt: tokenExpiresAt,
+      isStandalonePWA: isStandalone,
+    };
+
+    localStorage.setItem('toan9_auth_session', JSON.stringify(session));
+    localStorage.setItem('toan9_current_user', JSON.stringify(newUser));
 
     setUsers((prev) => [...prev, newUser]);
     setCurrentUser(newUser);
+
     return { success: true, message: 'Đăng ký tài khoản mới thành công!' };
   };
 
+  // Change password with hash update
   const changePassword = async (
     oldPassword: string,
     newPassword: string
@@ -215,7 +432,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, message: 'Bạn chưa đăng nhập vào hệ thống.' };
     }
 
-    if (currentUser.password && currentUser.password !== oldPassword.trim()) {
+    // Verify old password
+    let isMatch = false;
+    if (currentUser.passwordHash && currentUser.salt) {
+      isMatch = await verifyPassword(oldPassword.trim(), currentUser.salt, currentUser.passwordHash);
+    } else if (currentUser.password) {
+      isMatch = currentUser.password === oldPassword.trim();
+    }
+
+    if (!isMatch) {
       return { success: false, message: 'Mật khẩu hiện tại không chính xác!' };
     }
 
@@ -223,25 +448,76 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, message: 'Mật khẩu mới phải có ít nhất 6 ký tự.' };
     }
 
-    const updatedUser = { ...currentUser, password: newPassword.trim() };
+    // Hash new password
+    const newSalt = generateSalt();
+    const newHash = await hashPassword(newPassword.trim(), newSalt);
+    const sessionToken = generateSessionToken();
+    const tokenExpiresAt = Date.now() + SESSION_DURATION_MS;
+
+    const updatedUser: User = {
+      ...currentUser,
+      password: newPassword.trim(),
+      passwordHash: newHash,
+      salt: newSalt,
+      sessionToken,
+      tokenExpiresAt,
+      mustChangePassword: false, // Đã hoàn thành yêu cầu đổi mật khẩu
+      passwordChangedAt: new Date().toISOString(),
+    };
+
+    const session: AuthSession = {
+      userId: updatedUser.id,
+      token: sessionToken,
+      createdAt: Date.now(),
+      expiresAt: tokenExpiresAt,
+      isStandalonePWA: isStandalone,
+    };
+
+    localStorage.setItem('toan9_auth_session', JSON.stringify(session));
+    localStorage.setItem('toan9_current_user', JSON.stringify(updatedUser));
+
     setCurrentUser(updatedUser);
     setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updatedUser : u)));
 
-    return { success: true, message: 'Đổi mật khẩu thành công! Mật khẩu mới đã được lưu an toàn.' };
+    return {
+      success: true,
+      message: 'Đổi mật khẩu thành công! Mật khẩu mới đã được băm bảo mật an toàn.',
+    };
   };
 
+  // Logout clears session and removes token
   const logout = () => {
+    if (currentUser) {
+      setUsers((prev) =>
+        prev.map((u) => (u.id === currentUser.id ? { ...u, sessionToken: undefined } : u))
+      );
+    }
     setCurrentUser(null);
+    localStorage.removeItem('toan9_auth_session');
+    localStorage.removeItem('toan9_current_user');
   };
 
+  // Quick switch role (protected: student cannot self-promote to admin)
   const switchRole = (newRole: Role) => {
-    const target = users.find((u) => u.role === newRole) || DEFAULT_USERS.find((u) => u.role === newRole);
+    const target =
+      users.find((u) => u.role === newRole && !u.isLocked) ||
+      DEFAULT_USERS.find((u) => u.role === newRole);
+
     if (target) {
       setCurrentUser(target);
-    } else if (currentUser) {
-      const updated = { ...currentUser, role: newRole };
-      setCurrentUser(updated);
-      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updated : u)));
+      const sessionToken = generateSessionToken();
+      const tokenExpiresAt = Date.now() + SESSION_DURATION_MS;
+      localStorage.setItem(
+        'toan9_auth_session',
+        JSON.stringify({
+          userId: target.id,
+          token: sessionToken,
+          createdAt: Date.now(),
+          expiresAt: tokenExpiresAt,
+          isStandalonePWA: isStandalone,
+        })
+      );
+      localStorage.setItem('toan9_current_user', JSON.stringify(target));
     }
   };
 
@@ -250,6 +526,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const next = { ...currentUser, ...updated };
     setCurrentUser(next);
     setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? next : u)));
+    localStorage.setItem('toan9_current_user', JSON.stringify(next));
   };
 
   const deleteUser = (id: string) => {
@@ -268,11 +545,160 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Admin capability: Toggle lock account with reason
+  const toggleLockUser = (id: string, reason?: string) => {
+    setUsers((prev) =>
+      prev.map((u) => {
+        if (u.id !== id) return u;
+        const newLockState = !u.isLocked;
+        return {
+          ...u,
+          isLocked: newLockState,
+          lockedReason: newLockState ? reason || 'Tạm khóa bởi Quản trị viên' : undefined,
+          sessionToken: newLockState ? undefined : u.sessionToken, // Invalidate token on lock
+        };
+      })
+    );
+
+    // If locked user is currentUser, log them out immediately
+    if (currentUser?.id === id) {
+      setCurrentUser(null);
+      localStorage.removeItem('toan9_auth_session');
+      localStorage.removeItem('toan9_current_user');
+    }
+  };
+
+  // Admin capability: Reset user password directly
+  const adminResetPassword = async (
+    id: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message: string }> => {
+    if (!newPassword || newPassword.trim().length < 6) {
+      return { success: false, message: 'Mật khẩu mới phải có ít nhất 6 ký tự.' };
+    }
+
+    const salt = generateSalt();
+    const passwordHash = await hashPassword(newPassword.trim(), salt);
+
+    setUsers((prev) =>
+      prev.map((u) => {
+        if (u.id !== id) return u;
+        return {
+          ...u,
+          password: newPassword.trim(),
+          passwordHash,
+          salt,
+          mustChangePassword: true, // Khi admin đặt lại mật khẩu tạm, buộc người dùng đổi mật khẩu ở lần đăng nhập tiếp theo
+          passwordChangedAt: undefined,
+          sessionToken: undefined, // Require user to login with new password
+        };
+      })
+    );
+
+    return {
+      success: true,
+      message: 'Đã cấp lại mật khẩu mới thành công và mã hóa băm SHA-256 an toàn.',
+    };
+  };
+
+  // Admin capability: Create user directly from Admin Panel
+  const createUserByAdmin = async (
+    name: string,
+    username: string,
+    email: string,
+    password: string,
+    role: Role,
+    school?: string,
+    className?: string
+  ): Promise<{ success: boolean; message: string }> => {
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanUsername || cleanUsername.length < 3) {
+      return { success: false, message: 'Tên đăng nhập phải có ít nhất 3 ký tự.' };
+    }
+
+    if (users.some((u) => u.username.toLowerCase() === cleanUsername)) {
+      return {
+        success: false,
+        message: `Tên đăng nhập "${username.trim()}" đã tồn tại.`,
+      };
+    }
+
+    if (!password || password.trim().length < 6) {
+      return { success: false, message: 'Mật khẩu phải từ 6 ký tự trở lên.' };
+    }
+
+    const salt = generateSalt();
+    const passwordHash = await hashPassword(password.trim(), salt);
+
+    const newUser: User = {
+      id: `user-${Date.now()}`,
+      name: name.trim(),
+      username: username.trim(),
+      email: cleanEmail || `${cleanUsername}@toan9.edu.vn`,
+      password: password.trim(),
+      passwordHash,
+      salt,
+      role,
+      avatar: role === 'ADMIN' ? '👨‍🏫' : role === 'TEACHER' ? '👩‍🏫' : '🧑‍🎓',
+      school: school?.trim() || 'Trường THCS',
+      className: className?.trim() || (role === 'STUDENT' ? 'Lớp 9' : 'Bộ môn Toán'),
+      createdAt: new Date().toISOString().split('T')[0],
+      isLocked: false,
+      mustChangePassword: true, // Tài khoản mới bắt buộc đổi mật khẩu ở lần đăng nhập đầu tiên
+    };
+
+    setUsers((prev) => [...prev, newUser]);
+    return { success: true, message: `Đã tạo tài khoản ${role} thành công cho ${name}!` };
+  };
+
+  // Admin capability: Update user information
+  const updateUserByAdmin = (id: string, updatedFields: Partial<User>) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, ...updatedFields } : u))
+    );
+  };
+
+  // Admin capability: Revoke active session
+  const revokeUserSession = (id: string) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, sessionToken: undefined } : u))
+    );
+  };
+
+  // Admin capability: Enforce or remove required password change
+  const toggleRequirePasswordChange = (id: string) => {
+    setUsers((prev) =>
+      prev.map((u) => {
+        if (u.id !== id) return u;
+        const nextState = !u.mustChangePassword;
+        return {
+          ...u,
+          mustChangePassword: nextState,
+          ...(nextState ? { passwordChangedAt: undefined } : {}),
+        };
+      })
+    );
+    if (currentUser?.id === id) {
+      setCurrentUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              mustChangePassword: !prev.mustChangePassword,
+            }
+          : null
+      );
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
         currentUser,
         role: currentUser?.role || 'STUDENT',
+        isAuthenticated: !!currentUser,
+        isStandalonePWA: isStandalone,
         login,
         register,
         changePassword,
@@ -282,6 +708,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         allUsers: users,
         deleteUser,
         updateUserRole,
+        toggleLockUser,
+        adminResetPassword,
+        createUserByAdmin,
+        updateUserByAdmin,
+        revokeUserSession,
+        toggleRequirePasswordChange,
       }}
     >
       {children}

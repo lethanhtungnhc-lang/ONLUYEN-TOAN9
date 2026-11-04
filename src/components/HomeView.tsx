@@ -17,7 +17,8 @@ import {
   Star,
   ChevronRight,
   Gamepad2,
-  Smartphone
+  Smartphone,
+  Film
 } from 'lucide-react';
 import { MathView } from './MathView';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +35,14 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onOpenAuth, onOp
   const { studentProgress, chapters } = useApp();
 
   const featureCards = [
+    {
+      id: 'stem-video',
+      title: 'Phim Hoạt Hình 3D STEM',
+      desc: '60s điện ảnh 3D: Bài toán hợp kim đồng và kẽm (124g, 15cm³). Thí nghiệm tách khối, mô phỏng cân điện tử & giải phương trình cùng Teacher Lê Thanh Tùng.',
+      icon: Film,
+      color: 'from-cyan-500 via-teal-500 to-blue-600',
+      badge: '3D Điện Ảnh',
+    },
     {
       id: 'curriculum',
       title: 'Chương trình & Bài học',
