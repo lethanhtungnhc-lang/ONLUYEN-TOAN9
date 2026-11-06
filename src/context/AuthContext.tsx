@@ -157,9 +157,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   // Current logged in user with session validation
-  // Default to null on fresh visits (e.g. Netlify/GitHub/first open) so user is not automatically logged in as Admin
+  // Requirement: When app is installed, require fresh login for ALL accounts
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
+      const isStandaloneMode = isRunningStandalone();
+      const justInstalled = localStorage.getItem('toan9_just_installed') === 'true';
+      const standaloneAuthed = localStorage.getItem('toan9_standalone_authenticated') === 'true';
+
+      // If app was just installed or opened in standalone PWA without prior authentication inside the app, force login
+      if (justInstalled || (isStandaloneMode && !standaloneAuthed)) {
+        localStorage.removeItem('toan9_just_installed');
+        localStorage.removeItem('toan9_auth_session');
+        localStorage.removeItem('toan9_current_user');
+        return null;
+      }
+
       // 1. Check persistent secure session
       const storedSession = localStorage.getItem('toan9_auth_session');
       if (storedSession) {
@@ -169,13 +181,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (session.expiresAt && Date.now() > session.expiresAt) {
           localStorage.removeItem('toan9_auth_session');
           localStorage.removeItem('toan9_current_user');
-          return null;
-        }
-
-        // Check PWA requirement: When installed as standalone PWA on Android or iOS,
-        // if user hasn't logged in on standalone yet, require 1-time login in standalone mode
-        if (isStandalone && !session.isStandalonePWA) {
-          // Fresh launch in standalone mode requires 1-time login in the standalone app
           return null;
         }
 
@@ -242,6 +247,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     upgradeSecurity();
+  }, []);
+
+  // Listen for app installation: strictly require re-login for all accounts upon install
+  useEffect(() => {
+    const handleAppInstalled = () => {
+      localStorage.setItem('toan9_just_installed', 'true');
+      localStorage.removeItem('toan9_standalone_authenticated');
+      localStorage.removeItem('toan9_auth_session');
+      localStorage.removeItem('toan9_current_user');
+      setCurrentUser(null);
+    };
+
+    window.addEventListener('appinstalled', handleAppInstalled);
+    return () => window.removeEventListener('appinstalled', handleAppInstalled);
   }, []);
 
   // Save users to localStorage
@@ -375,6 +394,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUsers((prev) => prev.map((u) => (u.id === found.id ? updatedUser : u)));
     setCurrentUser(updatedUser);
     localStorage.setItem('toan9_current_user', JSON.stringify(updatedUser));
+
+    // When logging in in standalone PWA, mark as authenticated inside the installed app
+    if (isStandalone) {
+      localStorage.setItem('toan9_standalone_authenticated', 'true');
+    }
 
     return {
       success: true,
@@ -532,6 +556,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentUser(null);
     localStorage.removeItem('toan9_auth_session');
     localStorage.removeItem('toan9_current_user');
+    localStorage.removeItem('toan9_standalone_authenticated');
   };
 
   // Quick switch role (protected: Admin cannot be assumed without password login)

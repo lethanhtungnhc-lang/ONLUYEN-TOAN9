@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Chapter, Question, Exam, StudentProgress, Classroom } from '../types';
+import { Chapter, Question, Exam, StudentProgress, Classroom, UploadedDocument } from '../types';
 import { CHAPTERS_DATA } from '../data/curriculumData';
 import { QUESTION_BANK } from '../data/questionBank';
 import { EXAM_BANK } from '../data/examBank';
@@ -9,6 +9,7 @@ interface AppContextType {
   questions: Question[];
   exams: Exam[];
   classrooms: Classroom[];
+  documents: UploadedDocument[];
   studentProgress: StudentProgress;
   darkMode: boolean;
   toggleDarkMode: () => void;
@@ -23,6 +24,9 @@ interface AppContextType {
   deleteQuestion: (id: string) => void;
   addExam: (exam: Exam) => void;
   deleteExam: (id: string) => void;
+  // Document repository actions
+  addDocument: (doc: Omit<UploadedDocument, 'id' | 'uploadedAt'>) => void;
+  deleteDocument: (id: string) => void;
   updateLessonContent: (chapterId: string, lessonId: string, updatedFields: Partial<Chapter['lessons'][0]>) => void;
   // Teacher actions
   createClassroom: (name: string, grade: number) => void;
@@ -168,6 +172,45 @@ const INITIAL_CLASSROOMS: Classroom[] = [
   },
 ];
 
+const INITIAL_DOCUMENTS: UploadedDocument[] = [
+  {
+    id: 'doc-1',
+    title: 'Phụ lục 1 & 2 - Công văn 7991/BGDĐT-GDTrH Môn Toán 9',
+    category: 'MATRIX_SPEC',
+    fileName: '7991_BGDDT-GDTrH_Toan9_PhuLuc.pdf',
+    fileSize: '1.2 MB',
+    fileType: 'application/pdf',
+    uploadedBy: 'Teacher Lê Thanh Tùng',
+    uploadedAt: '2026-10-15',
+    assignedClass: 'Toàn khối 9',
+    note: 'Quy chuẩn khung ma trận, bản đặc tả và cấu trúc định dạng đề kiểm tra định kỳ năm học 2026-2027.',
+  },
+  {
+    id: 'doc-2',
+    title: 'Đề Cương Ôn Tập Giữa Học Kỳ I – Toán 9 GDPT 2018',
+    category: 'REVIEW_TOPIC',
+    fileName: 'DeCuong_OnTap_GiuaHK1_Toan9.docx',
+    fileSize: '850 KB',
+    fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    uploadedBy: 'Teacher Lê Thanh Tùng',
+    uploadedAt: '2026-10-25',
+    assignedClass: 'Lớp 9A1, 9A2',
+    note: 'Trọng tâm căn bậc hai, căn bậc ba và hệ hai phương trình bậc nhất hai ẩn.',
+  },
+  {
+    id: 'doc-3',
+    title: 'Đề Thi Thử Tuyển Sinh Vào Lớp 10 – Môn Toán 9 (Chuẩn CV 7991)',
+    category: 'EXAM_PAPER',
+    fileName: 'DeThiThu_Vao10_NHC_2026_2027.docx',
+    fileSize: '1.5 MB',
+    fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    uploadedBy: 'Tổ Tự Nhiên',
+    uploadedAt: '2026-11-01',
+    assignedClass: 'Toàn khối 9',
+    note: 'Đề chuẩn 4 phần theo CV 7991 có bảng ma trận và biểu điểm hướng dẫn chấm chi tiết.',
+  },
+];
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -226,6 +269,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
+  // Documents repository data
+  const [documents, setDocuments] = useState<UploadedDocument[]>(() => {
+    try {
+      const stored = localStorage.getItem('toan9_documents');
+      return stored ? JSON.parse(stored) : INITIAL_DOCUMENTS;
+    } catch {
+      return INITIAL_DOCUMENTS;
+    }
+  });
+
   // Classrooms data
   const [classrooms, setClassrooms] = useState<Classroom[]>(() => {
     try {
@@ -264,6 +317,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       localStorage.setItem('toan9_exams', JSON.stringify(exams));
     } catch (e) { console.error(e); }
   }, [exams]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('toan9_documents', JSON.stringify(documents));
+    } catch (e) { console.error(e); }
+  }, [documents]);
 
   useEffect(() => {
     try {
@@ -434,6 +493,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
+  const addDocument = (doc: Omit<UploadedDocument, 'id' | 'uploadedAt'>) => {
+    const newDoc: UploadedDocument = {
+      ...doc,
+      id: `doc-${Date.now()}`,
+      uploadedAt: new Date().toISOString().split('T')[0],
+    };
+    setDocuments((prev) => [newDoc, ...prev]);
+  };
+
+  const deleteDocument = (id: string) => {
+    setDocuments((prev) => prev.filter((d) => d.id !== id));
+  };
+
   // Full backup and restore
   const exportBackupData = (): string => {
     const backup = {
@@ -443,6 +515,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       chapters,
       questions,
       exams,
+      documents,
       classrooms,
       studentProgress,
     };
@@ -456,6 +529,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setChapters(data.chapters);
         setQuestions(data.questions);
         setExams(data.exams);
+        if (data.documents) setDocuments(data.documents);
         if (data.classrooms) setClassrooms(data.classrooms);
         if (data.studentProgress) setStudentProgress(data.studentProgress);
         return true;
@@ -471,11 +545,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setChapters(CHAPTERS_DATA);
     setQuestions(QUESTION_BANK);
     setExams(EXAM_BANK);
+    setDocuments(INITIAL_DOCUMENTS);
     setClassrooms(INITIAL_CLASSROOMS);
     setStudentProgress(INITIAL_PROGRESS);
     localStorage.removeItem('toan9_chapters');
     localStorage.removeItem('toan9_questions');
     localStorage.removeItem('toan9_exams');
+    localStorage.removeItem('toan9_documents');
     localStorage.removeItem('toan9_classrooms');
     localStorage.removeItem('toan9_progress');
   };
@@ -487,6 +563,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         questions,
         exams,
         classrooms,
+        documents,
         studentProgress,
         darkMode,
         toggleDarkMode,
@@ -499,6 +576,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteQuestion,
         addExam,
         deleteExam,
+        addDocument,
+        deleteDocument,
         updateLessonContent,
         createClassroom,
         assignExamToClass,

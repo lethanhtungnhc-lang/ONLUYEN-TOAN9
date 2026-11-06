@@ -226,3 +226,19 @@ export interface CustomExamConfig {
   format: '100_TN' | '70_TN_30_TL' | '100_TL';
 }
 
+export interface UploadedDocument {
+  id: string;
+  title: string;
+  category: 'EXAM_PAPER' | 'MATRIX_SPEC' | 'REVIEW_TOPIC' | 'SYLLABUS' | 'LESSON_PLAN' | 'EXAM' | 'MATRIX' | 'SPECIFICATION';
+  fileName: string;
+  fileSize: string;
+  fileType: string;
+  description?: string;
+  dataUrl?: string;
+  contentPreview?: string;
+  uploadedBy: string;
+  uploadedAt: string;
+  assignedClass?: string;
+  note?: string;
+}
+

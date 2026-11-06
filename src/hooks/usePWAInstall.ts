@@ -30,6 +30,11 @@ export function usePWAInstall() {
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
+      // Require re-login for all accounts upon app installation
+      localStorage.setItem('toan9_just_installed', 'true');
+      localStorage.removeItem('toan9_standalone_authenticated');
+      localStorage.removeItem('toan9_auth_session');
+      localStorage.removeItem('toan9_current_user');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -48,6 +53,11 @@ export function usePWAInstall() {
     if (outcome === 'accepted') {
       setIsInstalled(true);
       setDeferredPrompt(null);
+      // Require re-login for all accounts upon app installation
+      localStorage.setItem('toan9_just_installed', 'true');
+      localStorage.removeItem('toan9_standalone_authenticated');
+      localStorage.removeItem('toan9_auth_session');
+      localStorage.removeItem('toan9_current_user');
       return true;
     }
     return false;

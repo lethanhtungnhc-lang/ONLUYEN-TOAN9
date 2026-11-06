@@ -10,16 +10,22 @@ import {
   Clock,
   FileSpreadsheet,
   KeyRound,
-  GraduationCap
+  GraduationCap,
+  Sparkles,
+  Upload,
+  FileText,
+  Trash2
 } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { AddExamModal } from './AddExamModal';
+import { AIGenerateExamModal } from './AIGenerateExamModal';
+import { DocumentUploadModal } from './DocumentUploadModal';
 import { exportStudentsToXLSX, StudentExportData } from '../utils/excelExport';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 
 export const TeacherPanel: React.FC = () => {
-  const { classrooms, exams, createClassroom, assignExamToClass } = useApp();
+  const { classrooms, exams, createClassroom, assignExamToClass, documents, deleteDocument } = useApp();
   const { allUsers } = useAuth();
 
   const [selectedClassId, setSelectedClassId] = useState<string>(classrooms[0]?.id || '');
@@ -32,6 +38,8 @@ export const TeacherPanel: React.FC = () => {
   const [newClassName, setNewClassName] = useState<string>('');
   const [showChangePassModal, setShowChangePassModal] = useState<boolean>(false);
   const [showAddExamModal, setShowAddExamModal] = useState<boolean>(false);
+  const [showAIGenerateModal, setShowAIGenerateModal] = useState<boolean>(false);
+  const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
 
   const currentClass = classrooms.find((c) => c.id === selectedClassId) || classrooms[0];
 
@@ -126,6 +134,20 @@ export const TeacherPanel: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setShowAIGenerateModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-500/20 transition cursor-pointer"
+            title="Tạo nhanh ma trận, đặc tả, đề và hướng dẫn chấm bám sát CV 7991 bằng AI"
+          >
+            <Sparkles className="w-4 h-4 animate-pulse" /> Tạo đề AI (CV 7991)
+          </button>
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer"
+            title="Tải lên tài liệu giảng dạy, giáo án, đề kiểm tra Word/PDF/Excel"
+          >
+            <Upload className="w-4 h-4" /> Tải lên tài liệu
+          </button>
           <button
             onClick={() => setShowAddExamModal(true)}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-purple-500/20 transition cursor-pointer"
@@ -394,6 +416,121 @@ export const TeacherPanel: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Kho Tài Liệu & Đề Kiểm Tra Điện Tử */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div>
+            <div className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <FileText className="w-5 h-5 text-emerald-600" />
+              <span>Kho Tài Liệu & Đề Kiểm Tra Điện Tử</span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                {documents.length} tài liệu
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Tải lên và chia sẻ đề kiểm tra, giáo án, ma trận, bảng đặc tả (PDF, Word, Excel, Hình ảnh).
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowAIGenerateModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-xs cursor-pointer transition"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Tạo đề AI
+            </button>
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs font-semibold shadow-xs cursor-pointer transition"
+            >
+              <Upload className="w-3.5 h-3.5" /> Tải lên tệp
+            </button>
+          </div>
+        </div>
+
+        {documents.length === 0 ? (
+          <div className="py-8 text-center text-xs text-slate-500">
+            Chưa có tài liệu nào trong kho. Hãy bấm nút "Tải lên tệp" để thêm tài liệu mới!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {documents.map((doc) => (
+              <div
+                key={doc.id}
+                className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:border-emerald-400 transition flex flex-col justify-between"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                      {doc.category === 'EXAM' || doc.category === 'EXAM_PAPER' ? 'Đề kiểm tra' :
+                       doc.category === 'MATRIX' || doc.category === 'MATRIX_SPEC' ? 'Ma trận' :
+                       doc.category === 'SPECIFICATION' ? 'Bản đặc tả' :
+                       doc.category === 'LESSON_PLAN' ? 'Giáo án' : 'Tài liệu'}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400 uppercase">
+                      .{doc.fileType} • {doc.fileSize}
+                    </span>
+                  </div>
+
+                  <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">
+                    {doc.title}
+                  </h4>
+
+                  {doc.description && (
+                    <p className="text-[11px] text-slate-500 line-clamp-2">
+                      {doc.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400 truncate max-w-[120px]">
+                    {doc.uploadedBy}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {doc.dataUrl ? (
+                      <a
+                        href={doc.dataUrl}
+                        download={`${doc.title}.${doc.fileType}`}
+                        className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center gap-1"
+                      >
+                        <Download className="w-3 h-3" /> Tải về
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          const blob = new Blob([`Tài liệu: ${doc.title}\nLoại: ${doc.fileType}\nNgười tải: ${doc.uploadedBy}\nTrường TH, THCS Nguyễn Hữu Cảnh`], { type: 'text/plain;charset=utf-8' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${doc.title}.txt`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center gap-1"
+                      >
+                        <Download className="w-3 h-3" /> Tải về
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (confirm(`Bạn có chắc muốn xóa tài liệu "${doc.title}"?`)) {
+                          deleteDocument(doc.id);
+                        }
+                      }}
+                      className="p-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                      title="Xóa tài liệu"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Modal Change Password */}
       <ChangePasswordModal
         isOpen={showChangePassModal}
@@ -404,6 +541,18 @@ export const TeacherPanel: React.FC = () => {
       <AddExamModal
         isOpen={showAddExamModal}
         onClose={() => setShowAddExamModal(false)}
+      />
+
+      {/* Modal AI Quick Exam Generator */}
+      <AIGenerateExamModal
+        isOpen={showAIGenerateModal}
+        onClose={() => setShowAIGenerateModal(false)}
+      />
+
+      {/* Modal Document Upload */}
+      <DocumentUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
       />
     </div>
   );

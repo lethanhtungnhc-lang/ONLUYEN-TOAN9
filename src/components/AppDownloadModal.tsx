@@ -12,9 +12,11 @@ import {
   ArrowRight,
   ShieldCheck,
   Copy,
-  ExternalLink
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { updateAppToLatest } from '../utils/appUpdater';
 
 interface AppDownloadModalProps {
   isOpen: boolean;
@@ -27,8 +29,15 @@ export const AppDownloadModal: React.FC<AppDownloadModalProps> = ({ isOpen, onCl
     isIOS ? 'IOS' : 'ANDROID'
   );
   const [copied, setCopied] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleUpdate = async () => {
+    setIsUpdating(true);
+    await updateAppToLatest();
+    setTimeout(() => setIsUpdating(false), 2000);
+  };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -279,7 +288,17 @@ export const AppDownloadModal: React.FC<AppDownloadModalProps> = ({ isOpen, onCl
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 flex items-center justify-end">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 flex items-center justify-between gap-3">
+          <button
+            onClick={handleUpdate}
+            disabled={isUpdating}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition cursor-pointer disabled:opacity-50"
+            title="Xóa cache và nạp phiên bản mới nhất từ máy chủ"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-blue-600 dark:text-blue-400 ${isUpdating ? 'animate-spin' : ''}`} />
+            <span>{isUpdating ? 'Đang cập nhật...' : 'Cập nhật bản mới'}</span>
+          </button>
+
           <button
             onClick={onClose}
             className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm cursor-pointer"

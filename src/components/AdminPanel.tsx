@@ -27,10 +27,13 @@ import {
   Search,
   X,
   ShieldCheck,
-  Pencil
+  Pencil,
+  FileText
 } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { AddExamModal } from './AddExamModal';
+import { AIGenerateExamModal } from './AIGenerateExamModal';
+import { DocumentUploadModal } from './DocumentUploadModal';
 import { exportStudentsToXLSX, StudentExportData } from '../utils/excelExport';
 import {
   BarChart,
@@ -60,7 +63,9 @@ export const AdminPanel: React.FC = () => {
     deleteQuestion,
     exportBackupData,
     importBackupData,
-    resetToDefaultData
+    resetToDefaultData,
+    documents,
+    deleteDocument
   } = useApp();
 
   const {
@@ -104,7 +109,10 @@ export const AdminPanel: React.FC = () => {
     setTimeout(() => setActionNotification(null), 3500);
   };
 
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'USERS' | 'QUESTIONS' | 'REPORTS' | 'BACKUP'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'USERS' | 'QUESTIONS' | 'REPORTS' | 'DOCUMENTS' | 'BACKUP'>('OVERVIEW');
+  const [showAIGenerateModal, setShowAIGenerateModal] = useState<boolean>(false);
+  const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
+  const [docSearchQuery, setDocSearchQuery] = useState<string>('');
 
   // New question form state
   const [showAddQuestionModal, setShowAddQuestionModal] = useState<boolean>(false);
@@ -524,6 +532,22 @@ export const AdminPanel: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-2">
           <button
+            onClick={() => setShowAIGenerateModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-500/20 transition cursor-pointer"
+            title="Tạo nhanh ma trận, đặc tả, đề và hướng dẫn chấm bám sát CV 7991 bằng AI"
+          >
+            <Sparkles className="w-4 h-4 animate-pulse" /> Tạo đề AI (CV 7991)
+          </button>
+
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer"
+            title="Tải lên tài liệu, đề kiểm tra Word/PDF/Excel"
+          >
+            <Upload className="w-4 h-4" /> Tải lên tài liệu
+          </button>
+
+          <button
             onClick={() => setShowChangePassModal(true)}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-semibold border border-purple-200 dark:border-purple-800 transition cursor-pointer"
             title="Đổi mật khẩu tài khoản quản trị viên admin (mặc định 12345678)"
@@ -587,6 +611,17 @@ export const AdminPanel: React.FC = () => {
           }`}
         >
           <FileQuestion className="w-4 h-4" /> Ngân hàng câu hỏi ({questions.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('DOCUMENTS')}
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'DOCUMENTS'
+              ? 'bg-purple-600 text-white shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <FileText className="w-4 h-4" /> Kho tài liệu & đề thi ({documents.length})
         </button>
 
         <button
@@ -1086,6 +1121,161 @@ export const AdminPanel: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* TAB: DOCUMENTS & EXAM PAPERS */}
+      {activeTab === 'DOCUMENTS' && (
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <div className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                <FileText className="w-5 h-5 text-purple-600" />
+                <span>Kho Lưu Trữ Tài Liệu & Đề Kiểm Tra Toàn Trường</span>
+                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                  {documents.length} tệp
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Lưu trữ các tệp đề kiểm tra, ma trận, bảng đặc tả và giáo án môn Toán 9 (Đơn vị: Trường TH, THCS Nguyễn Hữu Cảnh).
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowAIGenerateModal(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold shadow-md shadow-purple-500/20 transition cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 animate-pulse" />
+                <span>Tạo đề AI (CV 7991)</span>
+              </button>
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+                <span>Tải lên tệp mới</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Search bar */}
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={docSearchQuery}
+                onChange={(e) => setDocSearchQuery(e.target.value)}
+                placeholder="Tìm kiếm tài liệu theo tiêu đề, loại tệp, mô tả hoặc người tải lên..."
+                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              />
+            </div>
+            {docSearchQuery && (
+              <button
+                onClick={() => setDocSearchQuery('')}
+                className="px-3 py-2 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              >
+                Xóa tìm kiếm
+              </button>
+            )}
+          </div>
+
+          {/* Documents Table or Grid */}
+          {documents.filter(d => 
+            d.title.toLowerCase().includes(docSearchQuery.toLowerCase()) ||
+            d.fileType.toLowerCase().includes(docSearchQuery.toLowerCase()) ||
+            d.uploadedBy.toLowerCase().includes(docSearchQuery.toLowerCase()) ||
+            (d.description && d.description.toLowerCase().includes(docSearchQuery.toLowerCase()))
+          ).length === 0 ? (
+            <div className="py-12 text-center text-xs text-slate-500">
+              Không tìm thấy tài liệu nào phù hợp.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {documents
+                .filter(d => 
+                  d.title.toLowerCase().includes(docSearchQuery.toLowerCase()) ||
+                  d.fileType.toLowerCase().includes(docSearchQuery.toLowerCase()) ||
+                  d.uploadedBy.toLowerCase().includes(docSearchQuery.toLowerCase()) ||
+                  (d.description && d.description.toLowerCase().includes(docSearchQuery.toLowerCase()))
+                )
+                .map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:border-purple-400 transition flex flex-col justify-between"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                          {doc.category === 'EXAM' || doc.category === 'EXAM_PAPER' ? 'Đề kiểm tra' :
+                           doc.category === 'MATRIX' || doc.category === 'MATRIX_SPEC' ? 'Ma trận' :
+                           doc.category === 'SPECIFICATION' ? 'Bản đặc tả' :
+                           doc.category === 'LESSON_PLAN' ? 'Giáo án' : 'Tài liệu'}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400 uppercase">
+                          .{doc.fileType} • {doc.fileSize}
+                        </span>
+                      </div>
+
+                      <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">
+                        {doc.title}
+                      </h4>
+
+                      {doc.description && (
+                        <p className="text-[11px] text-slate-500 line-clamp-2">
+                          {doc.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
+                      <span className="text-slate-400 truncate max-w-[120px]">
+                        {doc.uploadedBy}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {doc.dataUrl ? (
+                          <a
+                            href={doc.dataUrl}
+                            download={`${doc.title}.${doc.fileType}`}
+                            className="px-2 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] flex items-center gap-1"
+                          >
+                            <Download className="w-3 h-3" /> Tải về
+                          </a>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              const blob = new Blob([`Tài liệu: ${doc.title}\nLoại: ${doc.fileType}\nNgười tải: ${doc.uploadedBy}\nTrường TH, THCS Nguyễn Hữu Cảnh`], { type: 'text/plain;charset=utf-8' });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement('a');
+                              a.href = url;
+                              a.download = `${doc.title}.txt`;
+                              a.click();
+                              URL.revokeObjectURL(url);
+                            }}
+                            className="px-2 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] flex items-center gap-1"
+                          >
+                            <Download className="w-3 h-3" /> Tải về
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            if (confirm(`Bạn có chắc muốn xóa vĩnh viễn tài liệu "${doc.title}"?`)) {
+                              deleteDocument(doc.id);
+                              showToast(`Đã xóa tài liệu "${doc.title}"`);
+                            }
+                          }}
+                          className="p-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                          title="Xóa tài liệu"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -1651,6 +1841,18 @@ Cho tam giác ABC vuông tại A có AB = 6cm, AC = 8cm. Bán kính đường tr
       <AddExamModal
         isOpen={showAddExamModal}
         onClose={() => setShowAddExamModal(false)}
+      />
+
+      {/* Modal AI Quick Exam Generator */}
+      <AIGenerateExamModal
+        isOpen={showAIGenerateModal}
+        onClose={() => setShowAIGenerateModal(false)}
+      />
+
+      {/* Modal Document Upload */}
+      <DocumentUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
       />
 
       {/* Modal Create User by Admin */}

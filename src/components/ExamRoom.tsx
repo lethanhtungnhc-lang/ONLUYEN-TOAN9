@@ -11,8 +11,12 @@ import {
   BookOpen,
   XCircle,
   ShieldCheck,
-  Plus,
-  ArrowRight
+  ArrowRight,
+  Shuffle,
+  Sparkles,
+  Upload,
+  BrainCircuit,
+  Plus
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { soundEffects } from '../utils/soundEffects';
@@ -21,6 +25,8 @@ import { useAuth } from '../context/AuthContext';
 import { MathView } from './MathView';
 import { Exam, Question } from '../types';
 import { AddExamModal } from './AddExamModal';
+import { AIGenerateExamModal } from './AIGenerateExamModal';
+import { DocumentUploadModal } from './DocumentUploadModal';
 
 export const ExamRoom: React.FC = () => {
   const { exams, recordExamSubmission } = useApp();
@@ -29,8 +35,15 @@ export const ExamRoom: React.FC = () => {
   // State: selecting exam or taking exam
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [showAddExamModal, setShowAddExamModal] = useState<boolean>(false);
+  const [showAIGenerateModal, setShowAIGenerateModal] = useState<boolean>(false);
+  const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
   const [examStarted, setExamStarted] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
+  // Shuffled questions and exam code state
+  const [examQuestions, setExamQuestions] = useState<Question[]>([]);
+  const [examCode, setExamCode] = useState<string>('101');
+  const [isShuffleEnabled, setIsShuffleEnabled] = useState<boolean>(true);
 
   // Exam taking state
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -42,15 +55,46 @@ export const ExamRoom: React.FC = () => {
   const [finalScore, setFinalScore] = useState<number>(0);
   const [wrongQuestionIds, setWrongQuestionIds] = useState<string[]>([]);
 
-  // Start exam
+  // Function to shuffle questions and answer options
+  const shuffleQuestionsAndOptions = (rawQuestions: Question[]): { questions: Question[]; code: string } => {
+    const code = (101 + Math.floor(Math.random() * 899)).toString();
+    const shuffled = rawQuestions.map((q) => {
+      const qClone = { ...q };
+      if (qClone.type === 'MULTIPLE_CHOICE' && qClone.options && qClone.options.length > 1) {
+        qClone.options = [...qClone.options].sort(() => Math.random() - 0.5);
+      }
+      return qClone;
+    }).sort(() => Math.random() - 0.5);
+    return { questions: shuffled, code };
+  };
+
+  // Start exam with question and answer option shuffling
   const handleStartExam = (exam: Exam) => {
     setSelectedExam(exam);
+    if (isShuffleEnabled) {
+      const { questions: shuffled, code } = shuffleQuestionsAndOptions(exam.questions);
+      setExamQuestions(shuffled);
+      setExamCode(code);
+    } else {
+      setExamQuestions(exam.questions);
+      setExamCode('101');
+    }
     setTimeLeft(exam.durationMinutes * 60);
     setUserAnswers({});
     setFlaggedQuestions({});
     setCurrentQuestionIndex(0);
     setIsSubmitted(false);
     setExamStarted(true);
+  };
+
+  // Re-shuffle questions and answers while in exam
+  const handleReshuffleCurrentExam = () => {
+    if (!selectedExam || isSubmitted) return;
+    const { questions: shuffled, code } = shuffleQuestionsAndOptions(selectedExam.questions);
+    setExamQuestions(shuffled);
+    setExamCode(code);
+    setCurrentQuestionIndex(0);
+    soundEffects.playClick();
   };
 
   // Timer countdown
@@ -95,7 +139,7 @@ export const ExamRoom: React.FC = () => {
     let earnedPoints = 0;
     const wrongs: string[] = [];
 
-    selectedExam.questions.forEach((q) => {
+    examQuestions.forEach((q) => {
       totalPoints += q.points;
       const ans = userAnswers[q.id];
 
@@ -158,7 +202,7 @@ export const ExamRoom: React.FC = () => {
 
   // If in exam mode
   if (examStarted && selectedExam) {
-    const q = selectedExam.questions[currentQuestionIndex];
+    const q = examQuestions[currentQuestionIndex] || examQuestions[0];
     const isAnswered = !!userAnswers[q.id];
     const isFlagged = !!flaggedQuestions[q.id];
 
@@ -166,17 +210,34 @@ export const ExamRoom: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 py-6">
         
         {/* Top Control Bar */}
-        <div className="sticky top-16 z-30 mb-6 p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md flex items-center justify-between gap-4">
+        <div className="sticky top-16 z-30 mb-6 p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-xs sm:max-w-md">
-              {selectedExam.title}
-            </h2>
-            <div className="text-xs text-slate-500">
-              Câu {currentQuestionIndex + 1} / {selectedExam.questions.length} • {q.points} điểm
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate max-w-xs sm:max-w-md">
+                {selectedExam.title}
+              </h2>
+              <span className="px-2 py-0.5 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-extrabold text-xs">
+                MÃ ĐỀ: {examCode}
+              </span>
+            </div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              Câu {currentQuestionIndex + 1} / {examQuestions.length} • {q.points} điểm • Đã đảo ngẫu nhiên câu hỏi & đáp án
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Reshuffle questions & answers button */}
+            {!isSubmitted && (
+              <button
+                onClick={handleReshuffleCurrentExam}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-purple-300 dark:border-purple-800 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-bold transition active:scale-95 cursor-pointer shadow-xs"
+                title="Đảo ngẫu nhiên lại thứ tự câu hỏi và phương án A, B, C, D"
+              >
+                <Shuffle className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Đảo câu hỏi & đáp án</span>
+              </button>
+            )}
+
             {/* Countdown timer */}
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono text-sm font-bold border ${
               timeLeft < 300
@@ -378,7 +439,7 @@ export const ExamRoom: React.FC = () => {
               </h3>
 
               <div className="grid grid-cols-5 gap-2">
-                {selectedExam.questions.map((item, index) => {
+                {examQuestions.map((item, index) => {
                   const answered = !!userAnswers[item.id];
                   const flagged = !!flaggedQuestions[item.id];
                   const isCurrent = currentQuestionIndex === index;
@@ -471,13 +532,31 @@ export const ExamRoom: React.FC = () => {
         </div>
 
         {(role === 'ADMIN' || role === 'TEACHER') && (
-          <button
-            onClick={() => setShowAddExamModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-500/20 transition cursor-pointer self-start sm:self-auto shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Tạo đề thi thử mới</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto shrink-0">
+            <button
+              onClick={() => setShowAIGenerateModal(true)}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-500/20 transition cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4 animate-pulse" />
+              <span>Tạo đề AI (CV 7991)</span>
+            </button>
+
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Tải lên tài liệu & đề</span>
+            </button>
+
+            <button
+              onClick={() => setShowAddExamModal(true)}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Thêm đề thủ công</span>
+            </button>
+          </div>
         )}
       </div>
 
@@ -533,6 +612,18 @@ export const ExamRoom: React.FC = () => {
       <AddExamModal
         isOpen={showAddExamModal}
         onClose={() => setShowAddExamModal(false)}
+      />
+
+      {/* Modal AI Quick Exam Generator */}
+      <AIGenerateExamModal
+        isOpen={showAIGenerateModal}
+        onClose={() => setShowAIGenerateModal(false)}
+      />
+
+      {/* Modal Document Upload */}
+      <DocumentUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
       />
     </div>
   );
